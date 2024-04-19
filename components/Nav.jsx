@@ -2,9 +2,10 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import logo from './images/logo.png';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+// import { ConnectButton } from '@rainbow-me/rainbowkit';
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount} from "wagmi";
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 
 const Nav = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -14,7 +15,7 @@ const Nav = () => {
   const sideRef = useRef(null);
   const { address } = useAccount();
   const ulRef = useRef(null);
-
+  const { open } = useWeb3Modal()
   const connectHandler = () => {
     // Logic for connecting wallet
     setIsConnected(!isConnected);
@@ -83,6 +84,7 @@ const sideBarClose = () => {
           behavior: 'smooth',
         });
       }
+      open();
     };
 
   const handleScroll = () => {
@@ -114,7 +116,7 @@ const sideBarClose = () => {
         {
                   address ? (
                     <div>Buy <span className="text-[#FFA500] font-bold">$COM</span></div>
-                  ) : <ConnectButton />
+                  ) : 'Connect Wallet'
                 }
         </button>
         <div className="w-fit absolute top-2/4 left-2/4 -translate-x-1/2 -translate-y-1/2 mx-auto">
@@ -153,7 +155,7 @@ const sideBarClose = () => {
           {
                   address ? (
                     <div>Buy presale <span className="text-[#FFA500] font-bold">$COM</span></div>
-                  ) : <ConnectButton />
+                  ) : 'Connect Wallet'
                 }
           </button>
         </ul>
@@ -180,10 +182,9 @@ const sideBarClose = () => {
               {
                   address ? (
                     <div>Buy presale <span className="text-[#FFA500] font-bold">$COM</span></div>
-                  ) : <ConnectButton />
+                  ) : 'Connect Wallet'
                 }
             </button>
-            {/* <ConnectButton/> */}
           </div>
         </div>
       </section>

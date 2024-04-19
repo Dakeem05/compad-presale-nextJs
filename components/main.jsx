@@ -3,11 +3,15 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import mainImage from "./images/logo.png"
 import './main.css';
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount, useReadContract, useWriteContract, useBalance } from "wagmi";
 import abi from "../contracts/contract-abi.json";
 import Web3 from "web3";
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 // import BNB from '@/components/Icons/bnb'
+import { ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const Main = () => {
   const [limitError, setLimitError] = useState(false);
@@ -23,8 +27,19 @@ const Main = () => {
   const [etherPriceUSD, setEtherPriceUSD] = useState(null);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
+  const { open } = useWeb3Modal()
 
-
+  const notify = (message) => toast.error(message, {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+    // transition: Bounce,
+    });
 
   const { data } = useReadContract({
     abi: abi,
@@ -51,6 +66,10 @@ const Main = () => {
     functionName: "tokenPrice",
     args: [],
   });
+
+  const balance = useBalance({
+    address: address,
+  })
   // async function getters (){
   //   log
   
@@ -74,23 +93,23 @@ const Main = () => {
     const tPrice = convert(tokenPrice);
     const cMade = convert(totalTokensToSell);
     const cSold = convert(tokensSold);
-     async function convertEtherToUSDT(etherAmount) {
-      try {
-         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-         const data = await response.json();
-         const rate = data.ethereum.usd;
-        console.log(data.ethereum);
-         const usdtAmount = etherAmount * rate;
+//      async function convertEtherToUSDT(etherAmount) {
+//       try {
+//          const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+//          const data = await response.json();
+//          const rate = data.ethereum.usd;
+//         console.log(data.ethereum);
+//          const usdtAmount = etherAmount * rate;
      
-         return usdtAmount;
-      } catch (error) {
-         console.error('Error fetching exchange rate:', error);
-         return null;
-      }
-     }
-convertEtherToUSDT(8).then(usdtAmount => {
-  console.log(`${tPrice} Ether is equivalent to ${usdtAmount} USDT.`);
- });          
+//          return usdtAmount;
+//       } catch (error) {
+//          console.error('Error fetching exchange rate:', error);
+//          return null;
+//       }
+//      }
+// convertEtherToUSDT(8).then(usdtAmount => {
+//   // console.log(`${tPrice} Ether is equivalent to ${usdtAmount} USDT.`);
+//  });          
 
     setComMade(parseFloat(cMade).toLocaleString(undefined, {
       maximumFractionDigits: 6,
@@ -105,7 +124,7 @@ convertEtherToUSDT(8).then(usdtAmount => {
       maximumFractionDigits: 6,
     }));
     const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
-    console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
+    // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
 
   }, [tokenPrice, totalTokensToSell, tokensSold]);
 
@@ -113,6 +132,9 @@ convertEtherToUSDT(8).then(usdtAmount => {
   async function contribute(){
     if(address){
       if (data === false){
+       if(bnbAmount < 0.2 || bnbAmount > 2){
+        notify('Your BNB amount must be between 0.2 and 2');
+      } else {
         try {
           const tx = writeContractAsync({
             abi: abi,
@@ -120,9 +142,19 @@ convertEtherToUSDT(8).then(usdtAmount => {
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
           })
+          .catch(error => {
+            if (error.message.includes('insufficient funds')) {
+              console.log(balance);
+              notify(`Insufficient balance: You only have ${balance.data.formatted} ${balance.data.symbol}`);
+            } else {
+              notify('An error occurred while processing your transaction');
+            }
+          });
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
+        
+       }
       } else {
         try {
           const tx = writeContractAsync({
@@ -134,9 +166,13 @@ convertEtherToUSDT(8).then(usdtAmount => {
           console.error(error)
         }
       }
+    } 
+    else{
+      open();
     }
+    // switchToBSC();
   }
-
+// alert(address)
   function removeCommasAndConvertToNumber(formattedNumber) {
     // Remove commas from the formatted number
     if (typeof formattedNumber !== 'string') {
@@ -185,7 +221,7 @@ convertEtherToUSDT(8).then(usdtAmount => {
 
   const comSubmitHandler = (e) => {
     setLimitError(false);
-    console.log("Com Amount:", e); // Log the value of the input field
+    // console.log("Com Amount:", e); // Log the value of the input field
     let result = e * 0.0016;
     console.log("Result:", result); // Log the calculated result
   
@@ -321,10 +357,9 @@ convertEtherToUSDT(8).then(usdtAmount => {
                     <>
                     {data ? "claim" : <div>Buy presale <span className="text-[#FFA500] font-bold">$COM</span></div>}
                     </>
-                  ) : <ConnectButton />
+                  ) : 'Connect Wallet'
                 }
               </button>
-              
             </div>
           </div>
         </div>
