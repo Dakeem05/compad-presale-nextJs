@@ -21,8 +21,8 @@ import { WagmiProvider } from 'wagmi';
 const { wallets } = getDefaultWallets();
 
 const config = getDefaultConfig({
-  appName: 'RainbowKit demo',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: 'Compad | Private Presale',
+  projectId: '064d0a124217d401cda6999baf496215',
   wallets: [
     ...wallets,
     {

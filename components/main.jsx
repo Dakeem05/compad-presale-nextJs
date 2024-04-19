@@ -74,6 +74,24 @@ const Main = () => {
     const tPrice = convert(tokenPrice);
     const cMade = convert(totalTokensToSell);
     const cSold = convert(tokensSold);
+     async function convertEtherToUSDT(etherAmount) {
+      try {
+         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+         const data = await response.json();
+         const rate = data.ethereum.usd;
+        console.log(data.ethereum);
+         const usdtAmount = etherAmount * rate;
+     
+         return usdtAmount;
+      } catch (error) {
+         console.error('Error fetching exchange rate:', error);
+         return null;
+      }
+     }
+convertEtherToUSDT(8).then(usdtAmount => {
+  console.log(`${tPrice} Ether is equivalent to ${usdtAmount} USDT.`);
+ });          
+
     setComMade(parseFloat(cMade).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
