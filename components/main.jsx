@@ -22,7 +22,7 @@ const Main = () => {
   const [usdtMade, setUsdtMade] = useState(0);
   const [usdtSold, setUsdtSold] = useState(0);
   // const [usdtMade, setUsdtMade] = useState(0);
-
+  const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
   const [mounted, setMounted] = useState(false);
   const [etherPriceUSD, setEtherPriceUSD] = useState(null);
   const { address } = useAccount();
@@ -40,6 +40,18 @@ const Main = () => {
     theme: "dark",
     // transition: Bounce,
     });
+
+
+    const success = (message) => toast.success(message, {
+      position: "top-right",      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+      });
 
   const { data } = useReadContract({
     abi: abi,
@@ -108,27 +120,29 @@ const Main = () => {
 //       }
 //      }
 // convertEtherToUSDT(8).then(usdtAmount => {
-//   // console.log(`${tPrice} Ether is equivalent to ${usdtAmount} USDT.`);
-//  });          
-
-    setComMade(parseFloat(cMade).toLocaleString(undefined, {
-      maximumFractionDigits: 6,
-    }));
-    setUsdtMade(parseFloat(cMade * 0.0016).toLocaleString(undefined, {
-      maximumFractionDigits: 6,
-    }));
-    setComSold(parseFloat(cSold).toLocaleString(undefined, {
-      maximumFractionDigits: 6,
-    }));
-    setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
-      maximumFractionDigits: 6,
-    }));
-    const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
-    // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
-
+  //   // console.log(`${tPrice} Ether is equivalent to ${usdtAmount} USDT.`);
+  //  });          
+  
+  setComMade(parseFloat(cMade).toLocaleString(undefined, {
+    maximumFractionDigits: 6,
+  }));
+  setUsdtMade(parseFloat(cMade * 0.0016).toLocaleString(undefined, {
+    maximumFractionDigits: 6,
+  }));
+  setComSold(parseFloat(cSold).toLocaleString(undefined, {
+    maximumFractionDigits: 6,
+  }));
+  setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
+    maximumFractionDigits: 6,
+  }));
+  const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
+  // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
+  
+ 
   }, [tokenPrice, totalTokensToSell, tokensSold]);
 
-  
+
+
   async function contribute(){
     if(address){
       if (data === false){
@@ -141,6 +155,25 @@ const Main = () => {
             address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
+          })
+          .then(txHash => {
+            success('Transaction successful');
+            // try {
+            //   const receipt = await web3.eth.getTransactionReceipt(txHash);
+          
+            //   if (receipt && (receipt.status === true || receipt.status === 1n)) {
+            //     // Transaction was successful
+            //     console.log('Transaction successful:', receipt);
+            //     alert('Transaction successful');
+            //   } else {
+            //     // Transaction failed
+            //     console.log('Transaction failed:', receipt);
+            //     alert('Transaction failed');
+            //   }
+            // } catch (error) {
+            //   console.error('Error fetching transaction receipt:', error);
+            //   alert('Error fetching transaction receipt');
+            // }
           })
           .catch(error => {
             if (error.message.includes('insufficient funds')) {
@@ -163,6 +196,7 @@ const Main = () => {
             functionName: "claim",
           })
         } catch (error) {
+          notify('An error occurred while processing your transaction');
           console.error(error)
         }
       }
