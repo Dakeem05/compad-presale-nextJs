@@ -1,0 +1,61 @@
+import Hero from "@/components/hero";
+import Main from "@/components/main";
+import '@rainbow-me/rainbowkit/styles.css';
+import { RainbowKitProvider, getDefaultWallets, apiProvider } from '@rainbow-me/rainbowkit';
+import { WagmiProvider, createClient, chain } from 'wagmi';
+// import { alchemyProvider } from 'wagmi/providers/alchemy';
+// const {chains, provider} = configureChains(
+//   ['mainnet', 'polygon', 'bsc'],
+//   // [alchemyProvider({ alchemyId:'g_MWUeOGtR5gKMb78Xx3mQoBarteyMbZ'})]
+// )
+// const connectors = getDefaultWallets({
+//   appName: 'Compad | Private Presale',
+//   // chains,
+// })
+
+// const wagmiClient = createClient({
+//   autoConnect: true,
+//   connectors,
+//   provider,
+// })
+// import {
+//   mainnet,
+//   polygon,
+//   optimism,
+//   arbitrum,
+//   base,
+//   bsc
+// } from 'wagmi/chains';
+// import {
+//   QueryClientProvider,
+//   QueryClient,
+// } from "@tanstack/react-query";
+
+// function useRainbowKitConfig() {
+// const config = {
+//   appName: 'Compad | Private Presale',
+//   url :'http://localhost:3000',
+//   projectId: '064d0a124217d401cda6999baf496215',
+//   chains: [mainnet, polygon, optimism, arbitrum, base, bsc],
+//   ssr: true, // If your dApp uses server side rendering (SSR)
+// };
+//   return config;
+// }
+export default function Home() {
+  // const queryClient = new QueryClient();
+  // const rainbowKitConfig = useRainbowKitConfig();
+  return (
+
+    <>
+    {/* <WagmiProvider client={wagmiClient}> */}
+        {/* <RainbowKitProvider chains={chains} config={{appName: 'Compad | Private Presale'}}> */}
+      {/* <QueryClientProvider client={queryClient}> */}
+          {/* Your App */}
+      {/* </QueryClientProvider> */}
+        {/* </RainbowKitProvider> */}
+    {/* </WagmiProvider> */}
+          <Hero/>
+          <Main/>
+    </>
+  );
+}

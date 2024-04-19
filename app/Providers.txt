@@ -1,0 +1,70 @@
+"use client";
+
+import React from "react";
+import {
+  RainbowKitProvider,
+  getDefaultWallets,
+  apiProvider,
+  connectorsForWallets,
+} from "@rainbow-me/rainbowkit";
+import {
+  argentWallet,
+  trustWallet,
+  ledgerWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { configureChains, createConfig, WagmiProvider, useConfig } from "wagmi";
+import { polygonMumbai, sepolia, lineaTestnet } from "wagmi/chains";
+// import { alchemyProvider } from 'wagmi/providers/alchemy';
+
+const projectId = '064d0a124217d401cda6999baf496215';
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [polygonMumbai, sepolia, lineaTestnet],
+  [apiProvider.publicProvider()]
+);
+
+const { wallets } = getDefaultWallets({
+  appName: "RainbowKit demo",
+  projectId,
+  chains,
+});
+
+const demoAppInfo = {
+  appName: "Rainbowkit Demo",
+};
+
+const connectors = connectorsForWallets([
+  ...wallets,
+  {
+    groupName: "Other",
+    wallets: [
+      argentWallet({ projectId, chains }),
+      trustWallet({ projectId, chains }),
+      ledgerWallet({ projectId, chains }),
+    ],
+  },
+]);
+
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors,
+  publicClient,
+  webSocketPublicClient,
+});
+
+const Providers = ({ children }) => {
+    useConfig(wagmiConfig);
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <RainbowKitProvider
+        chains={chains}
+        appInfo={demoAppInfo}
+        modalSize="compact"
+      >
+        {children}
+      </RainbowKitProvider>
+    </WagmiProvider>
+  );
+};
+
+export default Providers;

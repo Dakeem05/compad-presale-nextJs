@@ -1,0 +1,100 @@
+.bg{
+    background-image: url('./images/bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.glass{
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.13);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5.8px);
+    -webkit-backdrop-filter: blur(5.8px);
+    border: 1px solid rgba(255, 255, 255, 0.466);
+}
+.center{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.progress-bar {
+position: relative;
+width: 100%;
+height: 8px;
+background-color: #f2f2f2;
+border-radius: 10px;
+overflow: hidden;
+}
+
+.progress {
+height: 100%;
+background-image: linear-gradient(to right, #8e49e9, #FA5441);
+width: 0%;
+border-radius: 10px;
+transition: width 0.3s ease;
+}
+
+.indicator {
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+width: 10px;
+height: 10px;
+background-color: #FA5441;
+border-radius: 50%;
+box-shadow: 0 0 10px rgba(179, 72, 10, 0.801);
+}
+.fixed-width::-webkit-scrollbar {
+width: 12px; /* Width of the scrollbar */
+height: 5px;
+border-radius: 6px;
+}
+
+.fixed-width::-webkit-scrollbar-track {
+background: #f1f1f1; /* Color of the track */
+border-radius: 6px;
+}
+
+.fixed-width::-webkit-scrollbar-thumb {
+background: #888; /* Color of the scrollbar */
+border-radius: 6px; /* Rounded corners */
+}
+
+.fixed-width::-webkit-scrollbar-thumb:hover {
+background: #555; /* Color of the scrollbar on hover */
+}
+
+.no-spinner {
+-webkit-appearance: none;
+-moz-appearance: textfield; /* For Firefox */
+appearance: none;
+}
+
+/* Additional styles to ensure consistent appearance */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+-webkit-appearance: none;
+}
+
+.no-spinner::-moz-number-spinbox {
+-moz-appearance: textfield;
+}
+@media only screen and (max-width:1024px) {
+.center{
+    position: relative;
+    top: 0%;
+    left: 0%;
+    margin: 2rem auto 2rem auto;
+    -ms-transform: translate(0%, 0%);
+    transform: translate(0%, 0%);
+}
+}
