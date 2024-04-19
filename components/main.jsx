@@ -13,13 +13,17 @@ const Main = () => {
   const [limitError, setLimitError] = useState(false);
   const [bnbAmount, setBnbAmount] = useState('');
   const [comAmount, setComAmount] = useState('');
+  const [comMade, setComMade] = useState(0);
+  const [comSold, setComSold] = useState(0);
+  const [usdtMade, setUsdtMade] = useState(0);
+  const [usdtSold, setUsdtSold] = useState(0);
+  // const [usdtMade, setUsdtMade] = useState(0);
+
   const [mounted, setMounted] = useState(false);
+  const [etherPriceUSD, setEtherPriceUSD] = useState(null);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
-  useEffect(() => {
-    setMounted(true)
-  }, []);
 
 
   const { data } = useReadContract({
@@ -27,7 +31,66 @@ const Main = () => {
     address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
     functionName: "saleEnded",
     args: [],
+  })
+
+  const {data : tokensSold} = useReadContract({
+    abi: abi,
+    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    functionName: "tokensSold",
+    args: [],
   });
+  const {data : totalTokensToSell} = useReadContract({
+    abi: abi,
+    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    functionName: "totalTokensToSell",
+    args: [],
+  });
+  const { data: tokenPrice} = useReadContract({
+    abi: abi,
+    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    functionName: "tokenPrice",
+    args: [],
+  });
+  // async function getters (){
+  //   log
+  
+  // }
+  // getters();
+  useEffect(() => {
+
+    setMounted(true)
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+    .then((response) => response.json())
+    .then((data) => {
+      const currentEtherPrice = data.ethereum.usd;
+      setEtherPriceUSD(currentEtherPrice);
+    })
+    .catch((error) => {
+      console.error('Error fetching Ether price:', error);
+    });
+    function convert (token){
+      return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
+    }
+    const tPrice = convert(tokenPrice);
+    const cMade = convert(totalTokensToSell);
+    const cSold = convert(tokensSold);
+    setComMade(parseFloat(cMade).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setUsdtMade(parseFloat(cMade * 0.0016).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setComSold(parseFloat(cSold).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
+    console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
+
+  }, [tokenPrice, totalTokensToSell, tokensSold]);
+
   
   async function contribute(){
     if(address){
@@ -56,16 +119,29 @@ const Main = () => {
     }
   }
 
+  function removeCommasAndConvertToNumber(formattedNumber) {
+    // Remove commas from the formatted number
+    if (typeof formattedNumber !== 'string') {
+      return null; // Or handle the error as appropriate
+    }
+    const numberWithNoCommas = formattedNumber.replace(/,/g, '');
+  
+    // Convert the string to a number
+    const number = parseFloat(numberWithNoCommas);
+  
+    return number;
+  }
+
   const progressStyle = () => {
-    const progressValue = 51231;
-    const totalValue = 100000;
+    const progressValue = removeCommasAndConvertToNumber(usdtSold);
+    const totalValue = removeCommasAndConvertToNumber(usdtMade);
     const progressPercentage = (progressValue / totalValue) * 100;
     return { width: `${progressPercentage}%` };
   };
 
   const indicatorStyle = () => {
-    const progressValue = 51231;
-    const totalValue = 100000;
+    const progressValue = removeCommasAndConvertToNumber(usdtSold);
+    const totalValue = removeCommasAndConvertToNumber(usdtMade);
     const progressPercentage = (progressValue / totalValue) * 100;
     return { left: `calc(${progressPercentage}% - 5px)` };
   };
@@ -151,25 +227,25 @@ const Main = () => {
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
               <article className="flex justify-between">
                 <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private Presale</h1>
-                <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">$51,231</span></h1>
+                <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">${usdtSold}</span></h1>
               </article>
               <div className="progress-bar mt-[2rem]">
                 <div style={progressStyle()} className="progress"></div>
                 <div style={indicatorStyle()} className="indicator"></div>
               </div>
               <article>
-                <h1 className="text-[rgba(255,255,255,0.68)] font-semibold text-end mt-[1rem]">TARGET: $100,000</h1>
+                <h1 className="text-[rgba(255,255,255,0.68)] font-semibold text-end mt-[1rem]">TARGET: ${usdtMade}</h1>
               </article>
               <article className="w-fit mx-auto mt-[1rem]">
                 <div className="flex gap-[0.5rem] sm:gap-[1.5rem]">
                   <h1 className="sm:text-lg font-semibold pt-1">USDT Raised:</h1>
-                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">$51,231</h1>
-                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/$100,000</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">${usdtSold}</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/${usdtMade}</h1>
                 </div>
                 <div className="flex gap-[0.5rem] sm:gap-[1.5rem]">
                   <h1 className="sm:text-lg font-semibold pt-1">Tokens Sold:</h1>
-                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">10,561,231</h1>
-                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/30,000,000</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">{comSold}</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/{comMade}</h1>
                 </div>
               </article>
               <article className="w-fit mx-auto mt-[1rem]">
