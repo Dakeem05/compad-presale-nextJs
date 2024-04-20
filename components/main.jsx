@@ -114,7 +114,7 @@ const Main = () => {
   // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
   
  
-  }, [tokenPrice, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold]);
+  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold]);
 
 
 
