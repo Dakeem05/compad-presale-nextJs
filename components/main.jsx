@@ -4,7 +4,7 @@ import Image from "next/image";
 import mainImage from "./images/logo.png"
 import './main.css';
 // import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useReadContract, useWriteContract, useBalance } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useBalance, useTransactionConfirmations } from "wagmi";
 import abi from "../contracts/contract-abi.json";
 import Web3 from "web3";
 import { useWeb3Modal } from '@web3modal/wagmi/react'
@@ -21,6 +21,7 @@ const Main = () => {
   const [comSold, setComSold] = useState(0);
   const [usdtMade, setUsdtMade] = useState(0);
   const [usdtSold, setUsdtSold] = useState(0);
+  const [transactionHash, setTransactionHash] = useState('');
   // const [usdtMade, setUsdtMade] = useState(0);
   const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
   const [mounted, setMounted] = useState(false);
@@ -49,8 +50,8 @@ const Main = () => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
-      transition: Bounce,
+      theme: "dark",
+      // transition: Bounce,
       });
 
   const { data } = useReadContract({
@@ -77,6 +78,10 @@ const Main = () => {
     address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
     functionName: "tokenPrice",
     args: [],
+  });
+  
+  const { status } = useTransactionConfirmations({
+    hash: transactionHash,
   });
 
   const balance = useBalance({
@@ -109,14 +114,44 @@ const Main = () => {
   setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
     maximumFractionDigits: 6,
   }));
-  // console.log(comMade, comSold, usdtMade, usdtSold);
-  // const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
-  // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
-  
+  // if (transactionHash && status === 'confirmed' && confirmations >= 6) {
+  //   // Transaction is confirmed
+  //   // console.log('Transaction is confirmed');
+  //   success('Transaction is confirmed');
+  //   // You can perform additional actions here, such as updating the UI or fetching new data
+  // }
+  if(transactionHash !== ''){
+    console.log(transactionHash);
+    check(transactionHash);
+  }
  
-  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold]);
+  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, status,]);
 
+const check = async (txHash) => {
+  try {
+    const receipt = await web3.eth.getTransactionReceipt(txHash);
 
+    if (receipt) {
+      if (receipt.status === 1n) {
+        // Transaction was successful
+        console.log('Transaction successful:', receipt);
+        // alert('Transaction successful');
+        success('Transaction successful');
+      } else {
+        // Transaction failed
+        console.log('Transaction failed:', receipt);
+        // alert('Transaction failed');
+        warn('Transaction processing or failed, wait a little.');
+      }
+    } else {
+      console.log('Transaction receipt not found');
+      notify('Transaction receipt not found');
+    }
+  } catch (error) {
+    console.error('Error fetching transaction receipt:', error);
+    notify('Error fetching transaction receipt');
+  }
+}
 
   async function contribute(){
     if(address){
@@ -125,30 +160,28 @@ const Main = () => {
         notify('Your BNB amount must be between 0.2 and 2');
       } else {
         try {
-          const tx = writeContractAsync({
+          const tx = await writeContractAsync({
             abi: abi,
             address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
           })
-          .then(txHash => {
-            success('Transaction successful');
-            // try {
-            //   const receipt = await web3.eth.getTransactionReceipt(txHash);
-          
-            //   if (receipt && (receipt.status === true || receipt.status === 1n)) {
-            //     // Transaction was successful
-            //     console.log('Transaction successful:', receipt);
-            //     alert('Transaction successful');
-            //   } else {
-            //     // Transaction failed
-            //     console.log('Transaction failed:', receipt);
-            //     alert('Transaction failed');
-            //   }
-            // } catch (error) {
-            //   console.error('Error fetching transaction receipt:', error);
-            //   alert('Error fetching transaction receipt');
-            // }
+          .then(tx => {
+            setTransactionHash(tx);
+            check(tx);
+            // success('Transaction successful');
+            // console.log(`first: ${tx}`);
+          //   toast.warn('Transaction processing', {
+          //     position: "top-right",
+          //     autoClose: 5000,
+          //     hideProgressBar: false,
+          //     closeOnClick: true,
+          //     pauseOnHover: true,
+          //     draggable: true,
+          //     progress: undefined,
+          //     theme: "dark",
+          //     transition: Bounce,
+          //     });
           })
           .catch(error => {
             if (error.message.includes('insufficient funds')) {
@@ -158,6 +191,7 @@ const Main = () => {
               notify('An error occurred while processing your transaction');
             }
           });
+          console.log(`second: ${tx}`);
         } catch (error) {
           console.error(error);
         }
@@ -165,7 +199,7 @@ const Main = () => {
        }
       } else {
         try {
-          const tx = writeContractAsync({
+          const tx = await writeContractAsync({
             abi: abi,
             address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
             functionName: "claim",
@@ -369,6 +403,7 @@ const Main = () => {
                   ) : 'Connect Wallet'
                 }
               </button>
+              <button onClick={check}>chack</button>
             </div>
           </div>
         </div>
