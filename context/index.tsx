@@ -20,6 +20,7 @@ const queryClient = new QueryClient()
 
 if (!projectId) throw new Error('Project ID is not defined')
 // Create modal
+console.log(projectId)
 createWeb3Modal({
   wagmiConfig: config,
 //   siweConfig,

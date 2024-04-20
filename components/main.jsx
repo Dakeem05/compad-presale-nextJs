@@ -94,7 +94,7 @@ const Main = () => {
         }
         const tPrice = convert(tokenPrice);
         const cMade = convert(totalTokensToSell);
-        console.log([data, tokenPrice, totalTokensToSell, tokensSold])
+        // console.log([data, tokenPrice, totalTokensToSell, tokensSold])
     const cSold = convert(tokensSold);
   
   setComMade(parseFloat(cMade).toLocaleString(undefined, {
@@ -109,7 +109,7 @@ const Main = () => {
   setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
     maximumFractionDigits: 6,
   }));
-  console.log(comMade, comSold, usdtMade, usdtSold);
+  // console.log(comMade, comSold, usdtMade, usdtSold);
   // const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
   // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
   

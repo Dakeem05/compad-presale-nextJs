@@ -11,8 +11,8 @@ if (!projectId) throw new Error('Project ID is not defined')
 const metadata = {
   name: 'Compad | Private Presale',
   description: 'Compad private presale website',
-  // url: 'https://compad-private-presale.vercel.app/', // origin must match your domain & subdomain
-  url: 'http://localhost:3000/', // origin must match your domain & subdomain
+  url: 'https://compad-private-presale.vercel.app/', // origin must match your domain & subdomain
+  // url: 'http://localhost:3000/', // origin must match your domain & subdomain
   icons: ['https://pbs.twimg.com/profile_images/1685353964450004993/7q2iSxcW_400x400.jpg']
 }
 
