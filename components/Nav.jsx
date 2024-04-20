@@ -83,8 +83,10 @@ const sideBarClose = () => {
           top: document.documentElement.scrollHeight,
           behavior: 'smooth',
         });
+      } else {
+        open();
       }
-      open();
+        
     };
 
   const handleScroll = () => {
@@ -154,7 +156,7 @@ const sideBarClose = () => {
           <button onClick={scrollToBottom} className="glass text-white py-3 px-[2rem] font-medium mt-[1.4rem] rounded-md">
           {
                   address ? (
-                    <div>Buy presale <span className="text-[#FFA500] font-bold">$COM</span></div>
+                    <div>Buy private sale <span className="text-[#FFA500] font-bold">$COM</span></div>
                   ) : 'Connect Wallet'
                 }
           </button>
@@ -181,7 +183,7 @@ const sideBarClose = () => {
               
               {
                   address ? (
-                    <div>Buy presale <span className="text-[#FFA500] font-bold">$COM</span></div>
+                    <div>Buy private sale <span className="text-[#FFA500] font-bold">$COM</span></div>
                   ) : 'Connect Wallet'
                 }
             </button>
