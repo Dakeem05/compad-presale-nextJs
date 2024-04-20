@@ -282,7 +282,7 @@ const Main = () => {
               <div className="grid grid-cols-3">
                 <h1 className="mt-[2rem] text-lg">Vesting Schedule:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)]">50% TGE</h1>
-                <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)] text-end">10% every 30 days</h1>
+                <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)] text-end">15% every 30 days</h1>
               </div>
               <h1 className="mt-[2rem] text-lg text-center text-[rgba(255,255,255,0.8)]">Private Sale Ends Once The Cap Is Filled</h1>
             </div>
