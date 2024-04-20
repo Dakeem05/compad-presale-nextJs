@@ -259,7 +259,7 @@ const Main = () => {
       <section className="bg py-[4rem] text-white px-[0.8rem] xs:px-[1rem] sm:px-[2rem] xl:px-[0]">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-2xl sm:text-3xl lg:text-5xl capitalize font-semibold">
-            Buy <span className="text-[#FFA500]">$COM</span> private sale token
+            Buy <span className="text-[#FFA500] font-bold">$COM</span> private sale
           </h1>
           <div className="glass relative w-full h-fit py-[2rem] flex flex-col lg:flex-row mt-[3rem]">
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
@@ -364,7 +364,7 @@ const Main = () => {
                 {
                   address ? (
                     <>
-                    {data ? "claim" : <div>Buy private sale <span className="text-[#FFA500] font-bold">$COM</span></div>}
+                    {data ? "claim" : <div>Buy  <span className="text-[#FFA500] font-bold">$COM</span></div>}
                     </>
                   ) : 'Connect Wallet'
                 }
