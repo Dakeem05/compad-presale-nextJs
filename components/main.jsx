@@ -114,12 +114,6 @@ const Main = () => {
   setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
     maximumFractionDigits: 6,
   }));
-  // if (transactionHash && status === 'confirmed' && confirmations >= 6) {
-  //   // Transaction is confirmed
-  //   // console.log('Transaction is confirmed');
-  //   success('Transaction is confirmed');
-  //   // You can perform additional actions here, such as updating the UI or fetching new data
-  // }
   if(transactionHash !== ''){
     console.log(transactionHash);
     check(transactionHash);
