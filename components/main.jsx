@@ -125,7 +125,7 @@ const Main = () => {
     check(transactionHash);
   }
  
-  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, status,]);
+  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash]);
 
 const check = async (txHash) => {
   try {
@@ -169,19 +169,6 @@ const check = async (txHash) => {
           .then(tx => {
             setTransactionHash(tx);
             check(tx);
-            // success('Transaction successful');
-            // console.log(`first: ${tx}`);
-          //   toast.warn('Transaction processing', {
-          //     position: "top-right",
-          //     autoClose: 5000,
-          //     hideProgressBar: false,
-          //     closeOnClick: true,
-          //     pauseOnHover: true,
-          //     draggable: true,
-          //     progress: undefined,
-          //     theme: "dark",
-          //     transition: Bounce,
-          //     });
           })
           .catch(error => {
             if (error.message.includes('insufficient funds')) {
@@ -403,7 +390,6 @@ const check = async (txHash) => {
                   ) : 'Connect Wallet'
                 }
               </button>
-              <button onClick={check}>chack</button>
             </div>
           </div>
         </div>
