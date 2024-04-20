@@ -24,7 +24,7 @@ const Main = () => {
   // const [usdtMade, setUsdtMade] = useState(0);
   const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
   const [mounted, setMounted] = useState(false);
-  const [etherPriceUSD, setEtherPriceUSD] = useState(null);
+  // const [etherPriceUSD, setEtherPriceUSD] = useState(null);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { open } = useWeb3Modal()
@@ -83,22 +83,22 @@ const Main = () => {
     address: address,
   })
   // async function getters (){
-  //   log
+    console.log([data, tokenPrice, totalTokensToSell, tokensSold])
   
   // }
   // getters();
   useEffect(() => {
 
     setMounted(true)
-    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
-    .then((response) => response.json())
-    .then((data) => {
-      const currentEtherPrice = data.ethereum.usd;
-      setEtherPriceUSD(currentEtherPrice);
-    })
-    .catch((error) => {
-      console.error('Error fetching Ether price:', error);
-    });
+    // fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+    // .then((response) => response.json())
+    // .then((data) => {
+    //   const currentEtherPrice = data.ethereum.usd;
+    //   setEtherPriceUSD(currentEtherPrice);
+    // })
+    // .catch((error) => {
+    //   console.error('Error fetching Ether price:', error);
+    // });
     function convert (token){
       return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
     }
@@ -135,7 +135,8 @@ const Main = () => {
   setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
     maximumFractionDigits: 6,
   }));
-  const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
+  console.log(comMade, comSold, usdtMade, usdtSold);
+  // const tokenPriceUSD = etherPriceUSD ? (tPrice ) * etherPriceUSD : null;
   // console.log(tokenPriceUSD != undefined ? tokenPriceUSD.toFixed(4) : null);
   
  
