@@ -83,45 +83,19 @@ const Main = () => {
     address: address,
   })
   // async function getters (){
-    console.log([data, tokenPrice, totalTokensToSell, tokensSold])
-  
-  // }
-  // getters();
+    
+    // }
+    // getters();
   useEffect(() => {
-
+    
     setMounted(true)
-    // fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
-    // .then((response) => response.json())
-    // .then((data) => {
-    //   const currentEtherPrice = data.ethereum.usd;
-    //   setEtherPriceUSD(currentEtherPrice);
-    // })
-    // .catch((error) => {
-    //   console.error('Error fetching Ether price:', error);
-    // });
-    function convert (token){
-      return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
-    }
-    const tPrice = convert(tokenPrice);
-    const cMade = convert(totalTokensToSell);
+        function convert (token){
+          return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
+        }
+        const tPrice = convert(tokenPrice);
+        const cMade = convert(totalTokensToSell);
+        console.log([data, tokenPrice, totalTokensToSell, tokensSold])
     const cSold = convert(tokensSold);
-//      async function convertEtherToUSDT(etherAmount) {
-//       try {
-//          const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-//          const data = await response.json();
-//          const rate = data.ethereum.usd;
-//         console.log(data.ethereum);
-//          const usdtAmount = etherAmount * rate;
-     
-//          return usdtAmount;
-//       } catch (error) {
-//          console.error('Error fetching exchange rate:', error);
-//          return null;
-//       }
-//      }
-// convertEtherToUSDT(8).then(usdtAmount => {
-  //   // console.log(`${tPrice} Ether is equivalent to ${usdtAmount} USDT.`);
-  //  });          
   
   setComMade(parseFloat(cMade).toLocaleString(undefined, {
     maximumFractionDigits: 6,
