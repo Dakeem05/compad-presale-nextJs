@@ -238,7 +238,7 @@ const check = async (txHash) => {
     setLimitError(false);
     if (e < 0.2 || e > 2) {
       setLimitError(true);
-      setBnbAmount(0);
+      setBnbAmount('');
       return;
     }
     let rate = 0.0016 / bnbPrice;
@@ -251,7 +251,8 @@ const check = async (txHash) => {
 
   const maxHandler = () => {
     setBnbAmount(2);
-    setComAmount(2 / 0.0016);
+    let rate = 0.0016 / bnbPrice;
+    setComAmount(e / rate);
   }
 
   const comSubmitHandler = (e) => {
@@ -262,7 +263,7 @@ const check = async (txHash) => {
     
     if (result < 0.2 || result > 2) {
         setLimitError(true);
-        setBnbAmount(0);
+        setBnbAmount('');
         setTimeout(() => {
             // setComAmount(0);
             setLimitError(false);
