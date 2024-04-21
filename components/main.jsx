@@ -21,6 +21,7 @@ const Main = () => {
   const [comSold, setComSold] = useState(0);
   const [usdtMade, setUsdtMade] = useState(0);
   const [usdtSold, setUsdtSold] = useState(0);
+  const [bnbPrice, setBnbPrice] = useState(0);
   const [transactionHash, setTransactionHash] = useState('');
   // const [usdtMade, setUsdtMade] = useState(0);
   const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
@@ -118,7 +119,16 @@ const Main = () => {
     console.log(transactionHash);
     check(transactionHash);
   }
- 
+  fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')
+  .then(response => response.json())
+  .then(data => {
+    const bnbPriceUSD = data.binancecoin.usd;
+    setBnbPrice(bnbPriceUSD);
+    // console.log(`Binance Coin Price in USD: $${bnbPriceUSD}`);
+  })
+  .catch(error => {
+    console.error('Error fetching Binance Coin price:', error);
+  });
   }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash]);
 
 const check = async (txHash) => {
@@ -231,7 +241,8 @@ const check = async (txHash) => {
       setBnbAmount(0);
       return;
     }
-    setComAmount(e / 0.0016);
+    let rate = 0.0016 / bnbPrice;
+    setComAmount(e / rate);
   };
 
   const typing = () => {
@@ -245,9 +256,8 @@ const check = async (txHash) => {
 
   const comSubmitHandler = (e) => {
     setLimitError(false);
-    // console.log("Com Amount:", e); // Log the value of the input field
-    let result = e * 0.0016;
-    console.log("Result:", result); // Log the calculated result
+    let rate = 0.0016 / bnbPrice;
+    let result = e * rate;
   
     
     if (result < 0.2 || result > 2) {
