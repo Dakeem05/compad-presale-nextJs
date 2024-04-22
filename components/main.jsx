@@ -207,6 +207,8 @@ const Main = () => {
             address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
             functionName: "claim",
           })
+          setTransactionHash(tx);
+            console.log(`Transaction Hash: ${tx}`);
         } catch (error) {
           notify('An error occurred while processing your transaction');
           console.error(error)
