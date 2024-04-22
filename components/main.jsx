@@ -344,7 +344,7 @@ const Main = () => {
             <div className="lg:border-l-[0.5px] border-b-[0.5px] lg:border-b-0 center w-[85%] lg:w-0 lg:h-[85%] border-b-[rgba(255,255,255,0.466)] lg:border-l-[rgba(255,255,255,0.466)]"></div>
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
               <article className="flex justify-between">
-                <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private Presale Ends In</h1>
+                <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private sale Ends In</h1>
                 {/* <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">${usdtSold}</span></h1> */}
               </article>
               {/* <div className="progress-bar mt-[2rem]">
