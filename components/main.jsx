@@ -3,14 +3,11 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import mainImage from "./images/logo.png"
 import './main.css';
-// import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useReadContract, useWriteContract, useBalance, useTransactionConfirmations } from "wagmi";
 import abi from "../contracts/contract-abi.json";
 import Web3 from "web3";
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-// import BNB from '@/components/Icons/bnb'
 import { ToastContainer, toast } from 'react-toastify';
-
 import 'react-toastify/dist/ReactToastify.css';
 
 const Main = () => {
@@ -21,12 +18,16 @@ const Main = () => {
   const [comSold, setComSold] = useState(0);
   const [usdtMade, setUsdtMade] = useState(0);
   const [usdtSold, setUsdtSold] = useState(0);
+  const [bnbSold, setBnbSold] = useState(0);
   const [bnbPrice, setBnbPrice] = useState(0);
+  const [bnbMade, setBnbMade] = useState(0);
   const [transactionHash, setTransactionHash] = useState('');
-  // const [usdtMade, setUsdtMade] = useState(0);
+  const [days, setDays] = useState('00');
+  const [hours, setHours] = useState('00');
+  const [minutes, setMinutes] = useState('00');
+  const [seconds, setSeconds] = useState('00');
   const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
   const [mounted, setMounted] = useState(false);
-  // const [etherPriceUSD, setEtherPriceUSD] = useState(null);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { open } = useWeb3Modal()
@@ -40,32 +41,28 @@ const Main = () => {
     draggable: true,
     progress: undefined,
     theme: "dark",
-    // transition: Bounce,
-    });
+  });
 
+  const success = (message) => toast.success(message, {
+    position: "top-right",      autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+  });
 
-    const success = (message) => toast.success(message, {
-      position: "top-right",      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-      // transition: Bounce,
-      });
-
-      const warn = (message) => toast.warn(message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        // transition: Bounce,
-        });
+  const warn = (message) => toast.warn(message, {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+  });
 
   const { data } = useReadContract({
     abi: abi,
@@ -80,12 +77,14 @@ const Main = () => {
     functionName: "tokensSold",
     args: [],
   });
+
   const {data : totalTokensToSell} = useReadContract({
     abi: abi,
     address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
     functionName: "totalTokensToSell",
     args: [],
   });
+
   const { data: tokenPrice} = useReadContract({
     abi: abi,
     address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
@@ -100,78 +99,67 @@ const Main = () => {
   const balance = useBalance({
     address: address,
   })
-  // async function getters (){
-    
-    // }  
-    // getters();
+
   useEffect(() => {
-    
     setMounted(true)
-        function convert (token){
-          return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
-        }
-        const tPrice = convert(tokenPrice);
-        const cMade = convert(totalTokensToSell);
-        // console.log([data, tokenPrice, totalTokensToSell, tokensSold])
-    const cSold = convert(tokensSold);
-  
-  setComMade(parseFloat(cMade).toLocaleString(undefined, {
-    maximumFractionDigits: 6,
-  }));
-  setUsdtMade(parseFloat(cMade * 0.0016).toLocaleString(undefined, {
-    maximumFractionDigits: 6,
-  }));
-  setComSold(parseFloat(cSold).toLocaleString(undefined, {
-    maximumFractionDigits: 6,
-  }));
-  setUsdtSold(parseFloat(cSold * 0.0016).toLocaleString(undefined, {
-    maximumFractionDigits: 6,
-  }));
-  if(transactionHash !== ''){
-    console.log(transactionHash);
-    setTimeout(() => {
-      check(transactionHash);
-    }, 3000);
-  }
-  fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')
-  .then(response => response.json())
-  .then(data => {
-    const bnbPriceUSD = data.binancecoin.usd;
-    setBnbPrice(bnbPriceUSD);
-    // console.log(`Binance Coin Price in USD: $${bnbPriceUSD}`);
-  })
-  .catch(error => {
-    console.error('Error fetching Binance Coin price:', error);
-  });
-
-  const check = async (txHash) => {
-    try {
-      const receipt = await web3.eth.getTransactionReceipt(txHash);
-
-
-  
-      // if (receipt) {
-        setTimeout(() => {
-          if (receipt.status === 1n) {
-            // Transaction was successful
-            console.log('Transaction successful:', receipt);
-            // alert('Transaction successful');
-            success('Transaction successful');
-          } else {
-            // Transaction failed
-            console.log('Transaction failed:', receipt);
-            // alert('Transaction failed');
-            warn('Transaction processing or failed, wait a little.');
-          }
-        }, 3000);
-    } catch (error) {
-      console.error('Error fetching transaction receipt:', error);
-      notify('Error fetching transaction receipt');
+    function convert (token){
+      return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
     }
-  }
-  
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')
+    .then(response => response.json())
+    .then(data => {
+      const bnbPriceUSD = data.binancecoin.usd;
+      setBnbPrice(bnbPriceUSD);
+    })
+    .catch(error => {
+      console.error('Error fetching Binance Coin price:', error);
+    });
+    const tPrice = convert(tokenPrice);
+    const cMade = convert(totalTokensToSell);
+    const cSold = convert(tokensSold);
+    setComMade(parseFloat(cMade).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setUsdtMade(parseFloat(cMade * 0.0015).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setComSold(parseFloat(cSold).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setUsdtSold(parseFloat(cSold * 0.0015).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setBnbMade(parseFloat((cMade * 0.0015) / bnbPrice).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setBnbSold(parseFloat((cSold * 0.0015) / bnbPrice).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    if(transactionHash !== ''){
+      console.log(transactionHash);
+      setTimeout(() => {
+        check(transactionHash);
+      }, 1000);
+    }
+    
+    const check = async (txHash) => {
+      try {
+        const receipt = await web3.eth.getTransactionReceipt(txHash);
+          setTimeout(() => {
+            if (receipt.status === 1n) {
+              console.log('Transaction successful:', receipt);
+              success('Transaction successful');
+            } else {
+              console.log('Transaction failed:', receipt);
+              warn('Transaction processing or failed, wait a little.');
+            }
+          }, 5000);
+      } catch (error) {
+        console.error('Error fetching transaction receipt:', error);
+        notify('Error fetching transaction receipt');
+      }
+    }
   }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
-
 
   async function contribute(){
     if(address){
@@ -186,18 +174,14 @@ const Main = () => {
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
           })
-          // setTimeout(() => {
             setTransactionHash(tx);
-            console.log(`second: ${tx}`);
-            check(tx);  
-          // }, 2000);
-        
+            console.log(`Transaction Hash: ${tx}`);
         } catch (error) {
           if (error.message.includes('insufficient funds')) {
             console.log(balance);
             notify(`Insufficient balance: You only have ${balance.data.formatted} ${balance.data.symbol}`);
           } else {
-            warn('An error occurred while processing your transaction');
+            warn('Transaction processing or failed, wait a little.');
           }
           console.error(error);
         }
@@ -219,35 +203,31 @@ const Main = () => {
     else{
       open();
     }
-    // switchToBSC();
   }
-// alert(address)
+
   function removeCommasAndConvertToNumber(formattedNumber) {
-    // Remove commas from the formatted number
     if (typeof formattedNumber !== 'string') {
-      return null; // Or handle the error as appropriate
+      return null;
     }
     const numberWithNoCommas = formattedNumber.replace(/,/g, '');
-  
-    // Convert the string to a number
     const number = parseFloat(numberWithNoCommas);
   
     return number;
   }
 
-  const progressStyle = () => {
-    const progressValue = removeCommasAndConvertToNumber(usdtSold);
-    const totalValue = removeCommasAndConvertToNumber(usdtMade);
-    const progressPercentage = (progressValue / totalValue) * 100;
-    return { width: `${progressPercentage}%` };
-  };
+  // const progressStyle = () => {
+  //   const progressValue = removeCommasAndConvertToNumber(usdtSold);
+  //   const totalValue = removeCommasAndConvertToNumber(usdtMade);
+  //   const progressPercentage = (progressValue / totalValue) * 100;
+  //   return { width: `${progressPercentage}%` };
+  // };
 
-  const indicatorStyle = () => {
-    const progressValue = removeCommasAndConvertToNumber(usdtSold);
-    const totalValue = removeCommasAndConvertToNumber(usdtMade);
-    const progressPercentage = (progressValue / totalValue) * 100;
-    return { left: `calc(${progressPercentage}% - 5px)` };
-  };
+  // const indicatorStyle = () => {
+  //   const progressValue = removeCommasAndConvertToNumber(usdtSold);
+  //   const totalValue = removeCommasAndConvertToNumber(usdtMade);
+  //   const progressPercentage = (progressValue / totalValue) * 100;
+  //   return { left: `calc(${progressPercentage}% - 5px)` };
+  // };
 
   const bnbSubmitHandler = (e) => {
     setLimitError(false);
@@ -256,7 +236,7 @@ const Main = () => {
       setBnbAmount('');
       return;
     }
-    let rate = 0.0016 / bnbPrice;
+    let rate = 0.0015 / bnbPrice;
     setComAmount(e / rate);
   };
 
@@ -266,34 +246,54 @@ const Main = () => {
 
   const maxHandler = () => {
     setBnbAmount(2);
-    let rate = 0.0016 / bnbPrice;
+    let rate = 0.0015 / bnbPrice;
     setComAmount(e / rate);
   }
 
   const comSubmitHandler = (e) => {
     setLimitError(false);
-    let rate = 0.0016 / bnbPrice;
-    let result = e * rate;
-  
-    
+    let rate = 0.0015 / bnbPrice;
+    let result = e * rate;    
     if (result < 0.2 || result > 2) {
         setLimitError(true);
         setBnbAmount('');
         setTimeout(() => {
-            // setComAmount(0);
             setLimitError(false);
         }, 3000);
         return;
     }
     setBnbAmount(result);
-  
-    // setComAmount(bnbAmount / 0.0016);
   };
-  
-  
+
   useEffect(() => {
-    console.log("Updated bnbAmount:", bnbAmount);
-  }, [bnbAmount]);
+    const endDate = new Date('2024-04-22T12:00:00');
+    endDate.setHours(endDate.getHours() + 48);
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const timeDifference = endDate - now;
+
+      if (timeDifference <= 0) {
+        clearInterval(interval);
+        setDays('00');
+        setHours('00');
+        setMinutes('00');
+        setSeconds('00');
+      } else {
+        const remainingDays = String(Math.floor(timeDifference / (1000 * 60 * 60 * 24))).padStart(2, '0');
+        const remainingHours = String(Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+        const remainingMinutes = String(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        const remainingSeconds = String(Math.floor((timeDifference % (1000 * 60)) / 1000)).padStart(2, '0');
+
+        setDays(remainingDays);
+        setHours(remainingHours);
+        setMinutes(remainingMinutes);
+        setSeconds(remainingSeconds);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
   
   return (
     <>
@@ -310,7 +310,7 @@ const Main = () => {
                 <h1 className="mt-[2rem] text-lg">Ticker symbol:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">$COM</h1>
                 <h1 className="mt-[2rem] text-lg">Private Sale Price:</h1>
-                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.0016</h1>
+                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.0015</h1>
                 <h1 className="mt-[2rem] text-lg">Total supply:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">30 million COM (3%)</h1>
                 <h1 className="mt-[2rem] text-lg">Private Presale Goal:</h1>
@@ -325,26 +325,45 @@ const Main = () => {
                 <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)]">50% TGE</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)] text-end">15% every 30 days</h1>
               </div>
-              <h1 className="mt-[2rem] text-lg text-center text-[rgba(255,255,255,0.8)]">Private Sale Ends Once The Cap Is Filled</h1>
             </div>
             <div className="lg:border-l-[0.5px] border-b-[0.5px] lg:border-b-0 center w-[85%] lg:w-0 lg:h-[85%] border-b-[rgba(255,255,255,0.466)] lg:border-l-[rgba(255,255,255,0.466)]"></div>
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
               <article className="flex justify-between">
                 <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private Presale</h1>
-                <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">${usdtSold}</span></h1>
+                {/* <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">${usdtSold}</span></h1> */}
               </article>
-              <div className="progress-bar mt-[2rem]">
+              {/* <div className="progress-bar mt-[2rem]">
                 <div style={progressStyle()} className="progress"></div>
                 <div style={indicatorStyle()} className="indicator"></div>
-              </div>
-              <article>
+              </div> */}
+              {/* <article>
                 <h1 className="text-[rgba(255,255,255,0.68)] font-semibold text-end mt-[1rem]">TARGET: ${usdtMade}</h1>
-              </article>
+              </article> */}
+               <div className="countdown-container bg-[linear-gradient(to_right,_#8e49e9,_#FA5441)]">
+                <div className="countdown-box">
+                  <span className="countdown-label">Days</span>
+                  <span className="countdown-value">{days}</span>
+                </div>
+                <div className="countdown-box">
+                  <span className="countdown-label">Hours</span>
+                  <span className="countdown-value">{hours}</span>
+                </div>
+                <div className="countdown-box">
+                  <span className="countdown-label hidden [@media_(min-width:400px)]:block">Minutes</span>
+                  <span className="countdown-label [@media_(min-width:400px)]:hidden">Mins</span>
+                  <span className="countdown-value">{minutes}</span>
+                </div>
+                <div className="countdown-box">
+                  <span className="countdown-label hidden [@media_(min-width:400px)]:block">Seconds</span>
+                  <span className="countdown-label [@media_(min-width:400px)]:hidden">Secs</span>
+                  <span className="countdown-value">{seconds}</span>
+                </div>
+              </div>
               <article className="w-fit mx-auto mt-[1rem]">
                 <div className="flex gap-[0.5rem] sm:gap-[1.5rem]">
-                  <h1 className="sm:text-lg font-semibold pt-1">USDT Raised:</h1>
-                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">${usdtSold}</h1>
-                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/${usdtMade}</h1>
+                  <h1 className="sm:text-lg font-semibold pt-1">BNB Raised:</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">{bnbSold}</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/{bnbMade}</h1>
                 </div>
                 <div className="flex gap-[0.5rem] sm:gap-[1.5rem]">
                   <h1 className="sm:text-lg font-semibold pt-1">Tokens Sold:</h1>
@@ -355,7 +374,7 @@ const Main = () => {
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
-                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.0016</h1>
+                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.0015</h1>
               </article>
               <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
                 <div className="w-full sm:w-[50%]">
