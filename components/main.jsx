@@ -90,7 +90,7 @@ const Main = () => {
   })
   // async function getters (){
     
-    // }
+    // }  
     // getters();
   useEffect(() => {
     
@@ -129,33 +129,35 @@ const Main = () => {
   .catch(error => {
     console.error('Error fetching Binance Coin price:', error);
   });
-  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash]);
 
-const check = async (txHash) => {
-  try {
-    const receipt = await web3.eth.getTransactionReceipt(txHash);
-
-    if (receipt) {
-      if (receipt.status === 1n) {
-        // Transaction was successful
-        console.log('Transaction successful:', receipt);
-        // alert('Transaction successful');
-        success('Transaction successful');
+  const check = async (txHash) => {
+    try {
+      const receipt = await web3.eth.getTransactionReceipt(txHash);
+  
+      if (receipt) {
+        if (receipt.status === 1n) {
+          // Transaction was successful
+          console.log('Transaction successful:', receipt);
+          // alert('Transaction successful');
+          success('Transaction successful');
+        } else {
+          // Transaction failed
+          console.log('Transaction failed:', receipt);
+          // alert('Transaction failed');
+          warn('Transaction processing or failed, wait a little.');
+        }
       } else {
-        // Transaction failed
-        console.log('Transaction failed:', receipt);
-        // alert('Transaction failed');
-        warn('Transaction processing or failed, wait a little.');
+        console.log('Transaction receipt not found');
+        notify('Transaction receipt not found');
       }
-    } else {
-      console.log('Transaction receipt not found');
-      notify('Transaction receipt not found');
+    } catch (error) {
+      console.error('Error fetching transaction receipt:', error);
+      notify('Error fetching transaction receipt');
     }
-  } catch (error) {
-    console.error('Error fetching transaction receipt:', error);
-    notify('Error fetching transaction receipt');
   }
-}
+  
+  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
+
 
   async function contribute(){
     if(address){
