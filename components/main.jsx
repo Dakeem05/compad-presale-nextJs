@@ -170,20 +170,17 @@ const check = async (txHash) => {
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
           })
-          .then(tx => {
-            setTransactionHash(tx);
-            check(tx);
-          })
-          .catch(error => {
-            if (error.message.includes('insufficient funds')) {
-              console.log(balance);
-              notify(`Insufficient balance: You only have ${balance.data.formatted} ${balance.data.symbol}`);
-            } else {
-              notify('An error occurred while processing your transaction');
-            }
-          });
+          setTransactionHash(tx);
+          check(tx);  
+        
           console.log(`second: ${tx}`);
         } catch (error) {
+          if (error.message.includes('insufficient funds')) {
+            console.log(balance);
+            notify(`Insufficient balance: You only have ${balance.data.formatted} ${balance.data.symbol}`);
+          } else {
+            notify('An error occurred while processing your transaction');
+          }
           console.error(error);
         }
         
