@@ -153,7 +153,7 @@ const Main = () => {
               console.log('Transaction failed:', receipt);
               warn('Transaction processing or failed, wait a little.');
             }
-          }, 5000);
+          }, 3000);
       } catch (error) {
         console.error('Error fetching transaction receipt:', error);
         notify('Error fetching transaction receipt');
