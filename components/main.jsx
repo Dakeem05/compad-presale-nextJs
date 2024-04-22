@@ -21,6 +21,7 @@ const Main = () => {
   const [bnbSold, setBnbSold] = useState(0);
   const [bnbPrice, setBnbPrice] = useState(0);
   const [bnbMade, setBnbMade] = useState(0);
+  const [isFinished, setIsFinished] = useState(0);
   const [transactionHash, setTransactionHash] = useState('');
   const [days, setDays] = useState('00');
   const [hours, setHours] = useState('00');
@@ -120,19 +121,19 @@ const Main = () => {
     setComMade(parseFloat(cMade).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setUsdtMade(parseFloat(cMade * 0.0015).toLocaleString(undefined, {
+    setUsdtMade(parseFloat(cMade * 0.015).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     setComSold(parseFloat(cSold).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setUsdtSold(parseFloat(cSold * 0.0015).toLocaleString(undefined, {
+    setUsdtSold(parseFloat(cSold * 0.015).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbMade(parseFloat((cMade * 0.0015) / bnbPrice).toLocaleString(undefined, {
+    setBnbMade(parseFloat((cMade * 0.015) / bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbSold(parseFloat((cSold * 0.0015) / bnbPrice).toLocaleString(undefined, {
+    setBnbSold(parseFloat((cSold * 0.015) / bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     if(transactionHash !== ''){
@@ -141,6 +142,8 @@ const Main = () => {
         check(transactionHash);
       }, 3000);
     }
+
+    setIsFinished(data);
     
     const check = async (txHash, retries = 0) => {
       try {
@@ -169,11 +172,11 @@ const Main = () => {
       }
     }
     
-  }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
+  }, [tokenPrice, data,  totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
 
   async function contribute(){
     if(address){
-      if (data === false){
+      if (isFinished === false){
        if(bnbAmount < 0.2 || bnbAmount > 2){
         notify('Your BNB amount must be between 0.2 and 2');
       } else {
@@ -246,7 +249,7 @@ const Main = () => {
       setBnbAmount('');
       return;
     }
-    let rate = 0.0015 / bnbPrice;
+    let rate = 0.015 / bnbPrice;
     setComAmount(e / rate);
   };
 
@@ -256,13 +259,13 @@ const Main = () => {
 
   const maxHandler = () => {
     setBnbAmount(2);
-    let rate = 0.0015 / bnbPrice;
+    let rate = 0.015 / bnbPrice;
     setComAmount(e / rate);
   }
 
   const comSubmitHandler = (e) => {
     setLimitError(false);
-    let rate = 0.0015 / bnbPrice;
+    let rate = 0.015 / bnbPrice;
     let result = e * rate;    
     if (result < 0.2 || result > 2) {
         setLimitError(true);
@@ -289,6 +292,8 @@ const Main = () => {
         setHours('00');
         setMinutes('00');
         setSeconds('00');
+        console.log('Fissed');
+        setIsFinished(true);
       } else {
         const remainingDays = String(Math.floor(timeDifference / (1000 * 60 * 60 * 24))).padStart(2, '0');
         const remainingHours = String(Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
@@ -320,11 +325,11 @@ const Main = () => {
                 <h1 className="mt-[2rem] text-lg">Ticker symbol:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">$COM</h1>
                 <h1 className="mt-[2rem] text-lg">Private Sale Price:</h1>
-                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.0015</h1>
+                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.015</h1>
                 <h1 className="mt-[2rem] text-lg">Total supply:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">30 million COM (3%)</h1>
                 <h1 className="mt-[2rem] text-lg">Private Presale Goal:</h1>
-                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">$100,000</h1>
+                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">{bnbMade}BNB</h1>
                 <h1 className="mt-[2rem] text-lg">Minimum Buy:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.2BNB</h1>
                 <h1 className="mt-[2rem] text-lg">Maximum Buy:</h1>
@@ -339,7 +344,7 @@ const Main = () => {
             <div className="lg:border-l-[0.5px] border-b-[0.5px] lg:border-b-0 center w-[85%] lg:w-0 lg:h-[85%] border-b-[rgba(255,255,255,0.466)] lg:border-l-[rgba(255,255,255,0.466)]"></div>
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
               <article className="flex justify-between">
-                <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private Presale</h1>
+                <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private Presale Ends In</h1>
                 {/* <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">${usdtSold}</span></h1> */}
               </article>
               {/* <div className="progress-bar mt-[2rem]">
@@ -384,7 +389,7 @@ const Main = () => {
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
-                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.0015</h1>
+                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.015</h1>
               </article>
               <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
                 <div className="w-full sm:w-[50%]">

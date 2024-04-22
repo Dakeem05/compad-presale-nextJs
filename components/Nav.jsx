@@ -119,7 +119,7 @@ const sideBarClose = () => {
         {
                   address ? (
                     <div>Buy <span className="text-[#FFA500] font-bold">$COM</span></div>
-                  ) : 'Connect Wallet'
+                  ) : 'Connect'
                 }
         </button>
         <div className="w-fit absolute top-2/4 left-2/4 -translate-x-1/2 -translate-y-1/2 mx-auto">
