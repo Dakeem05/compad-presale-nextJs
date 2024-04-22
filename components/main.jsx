@@ -149,6 +149,9 @@ const Main = () => {
             if (receipt.status === 1n) {
               console.log('Transaction successful:', receipt);
               success('Transaction successful');
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
             } else {
               console.log('Transaction failed:', receipt);
               warn('Transaction processing or failed, wait a little.');
