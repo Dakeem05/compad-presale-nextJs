@@ -139,29 +139,36 @@ const Main = () => {
       console.log(transactionHash);
       setTimeout(() => {
         check(transactionHash);
-      }, 1000);
+      }, 3000);
     }
     
-    const check = async (txHash) => {
+    const check = async (txHash, retries = 0) => {
       try {
         const receipt = await web3.eth.getTransactionReceipt(txHash);
+    
+        if (receipt && receipt.status === 1n) {
+          console.log('Transaction successful:', receipt);
+          success('Transaction successful');
+          // Optionally reload the page after successful transaction
           setTimeout(() => {
-            if (receipt.status === 1n) {
-              console.log('Transaction successful:', receipt);
-              success('Transaction successful');
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            } else {
-              console.log('Transaction failed:', receipt);
-              warn('Transaction processing or failed, wait a little.');
-            }
+            window.location.reload();
           }, 3000);
+        } else if (retries < 10) { // Limit retries to prevent infinite loop
+          console.log('Transaction processing or failed, wait a little.');
+          setTimeout(() => {
+            check(txHash, retries + 1); // Recursive call
+          }, 5000); // Retry after 5 seconds
+        } else {
+          console.log('Transaction failed after retries:', receipt);
+          warn('Transaction failed after retries');
+        }
       } catch (error) {
         console.error('Error fetching transaction receipt:', error);
-        notify('Error fetching transaction receipt');
+        warn('Transaction processing');
+        // notify('Error fetching transaction receipt');
       }
     }
+    
   }, [tokenPrice, data, totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
 
   async function contribute(){
