@@ -55,6 +55,18 @@ const Main = () => {
       // transition: Bounce,
       });
 
+      const warn = (message) => toast.warn(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        // transition: Bounce,
+        });
+
   const { data } = useReadContract({
     abi: abi,
     address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
@@ -152,10 +164,6 @@ const Main = () => {
             warn('Transaction processing or failed, wait a little.');
           }
         }, 3000);
-      // } else {
-      //   console.log('Transaction receipt not found');
-      //   notify('Transaction receipt not found');
-      // }
     } catch (error) {
       console.error('Error fetching transaction receipt:', error);
       notify('Error fetching transaction receipt');
@@ -189,7 +197,7 @@ const Main = () => {
             console.log(balance);
             notify(`Insufficient balance: You only have ${balance.data.formatted} ${balance.data.symbol}`);
           } else {
-            notify('An error occurred while processing your transaction');
+            warn('An error occurred while processing your transaction');
           }
           console.error(error);
         }
