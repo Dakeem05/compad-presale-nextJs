@@ -17,7 +17,7 @@ const metadata = {
 }
 
 // Create wagmiConfig
-const chains = [bscTestnet, bsc] as const
+const chains = [bsc] as const
 export const config = defaultWagmiConfig({
   chains,
   projectId,

@@ -27,7 +27,7 @@ const Main = () => {
   const [hours, setHours] = useState('00');
   const [minutes, setMinutes] = useState('00');
   const [seconds, setSeconds] = useState('00');
-  const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
+  const web3 = new Web3('https://bsc-dataseed.binance.org:8545');
   const [mounted, setMounted] = useState(false);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -340,7 +340,7 @@ const Main = () => {
               <div className="grid grid-cols-3">
                 <h1 className="mt-[2rem] text-lg">Vesting Schedule:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)]">50% TGE</h1>
-                <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)] text-end">15% every 30 days</h1>
+                <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)] text-end">25% every 30 days</h1>
               </div>
             </div>
             <div className="lg:border-l-[0.5px] border-b-[0.5px] lg:border-b-0 center w-[85%] lg:w-0 lg:h-[85%] border-b-[rgba(255,255,255,0.466)] lg:border-l-[rgba(255,255,255,0.466)]"></div>
