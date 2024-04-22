@@ -279,7 +279,7 @@ const Main = () => {
   };
 
   useEffect(() => {
-    const endDate = new Date('2024-04-22T12:00:00');
+    const endDate = new Date('2024-04-21T12:00:00');
     endDate.setHours(endDate.getHours() + 48);
 
     const interval = setInterval(() => {
