@@ -117,7 +117,9 @@ const Main = () => {
   }));
   if(transactionHash !== ''){
     console.log(transactionHash);
-    check(transactionHash);
+    setTimeout(() => {
+      check(transactionHash);
+    }, 3000);
   }
   fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')
   .then(response => response.json())
@@ -133,23 +135,27 @@ const Main = () => {
   const check = async (txHash) => {
     try {
       const receipt = await web3.eth.getTransactionReceipt(txHash);
+
+
   
-      if (receipt) {
-        if (receipt.status === 1n) {
-          // Transaction was successful
-          console.log('Transaction successful:', receipt);
-          // alert('Transaction successful');
-          success('Transaction successful');
-        } else {
-          // Transaction failed
-          console.log('Transaction failed:', receipt);
-          // alert('Transaction failed');
-          warn('Transaction processing or failed, wait a little.');
-        }
-      } else {
-        console.log('Transaction receipt not found');
-        notify('Transaction receipt not found');
-      }
+      // if (receipt) {
+        setTimeout(() => {
+          if (receipt.status === 1n) {
+            // Transaction was successful
+            console.log('Transaction successful:', receipt);
+            // alert('Transaction successful');
+            success('Transaction successful');
+          } else {
+            // Transaction failed
+            console.log('Transaction failed:', receipt);
+            // alert('Transaction failed');
+            warn('Transaction processing or failed, wait a little.');
+          }
+        }, 3000);
+      // } else {
+      //   console.log('Transaction receipt not found');
+      //   notify('Transaction receipt not found');
+      // }
     } catch (error) {
       console.error('Error fetching transaction receipt:', error);
       notify('Error fetching transaction receipt');
@@ -172,10 +178,12 @@ const Main = () => {
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
           })
-          setTransactionHash(tx);
-          check(tx);  
+          // setTimeout(() => {
+            setTransactionHash(tx);
+            console.log(`second: ${tx}`);
+            check(tx);  
+          // }, 2000);
         
-          console.log(`second: ${tx}`);
         } catch (error) {
           if (error.message.includes('insufficient funds')) {
             console.log(balance);
