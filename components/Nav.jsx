@@ -1,17 +1,23 @@
 'use client'
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import abi from "../contracts/contract-abi.json";
 import logo from './images/logo.png';
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount} from "wagmi";
+import { useAccount, useReadContract} from "wagmi";
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 
 const Nav = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isSide, setIsSide] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [scroll, setScroll] = useState(0);
+  const [days, setDays] = useState('00');
+  const [hours, setHours] = useState('00');
+  const [minutes, setMinutes] = useState('00');
+  const [seconds, setSeconds] = useState('00');
   const sideRef = useRef(null);
   const { address } = useAccount();
   const ulRef = useRef(null);
@@ -20,6 +26,13 @@ const Nav = () => {
     // Logic for connecting wallet
     setIsConnected(!isConnected);
   };
+
+  const { data : isEnded } = useReadContract({
+    abi: abi,
+    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    functionName: "saleEnded",
+    args: [],
+  })
 
   const sideBarOpen = () => {
     setIsSide(true);
@@ -103,10 +116,60 @@ const sideBarClose = () => {
   // Attach scroll event listener
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
+    setIsFinished(isEnded);
+    if(isEnded == true){
+      // clearInterval(interval);
+        setDays('00');
+        setHours('00');
+        setMinutes('00');
+        setSeconds('00');
+        console.log('Finished private sale');
+        setIsFinished(true);
+    }
+    
+    
+    // alert(isEnded)
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isEnded]);
+
+  useEffect(() => {
+    const endDate = new Date('2024-04-23T00:00:00');
+    endDate.setHours(endDate.getHours() + 48);
+    if(isEnded == false){
+      const interval = setInterval(() => {
+        const now = new Date();
+        const timeDifference = endDate - now;
+  
+        
+  
+        if (timeDifference <= 0) {
+          clearInterval(interval);
+          setDays('00');
+          setHours('00');
+          setMinutes('00');
+          setSeconds('00');
+          console.log('Finished private sale');
+          setIsFinished(true);
+        } else {
+          const remainingDays = String(Math.floor(timeDifference / (1000 * 60 * 60 * 24))).padStart(2, '0');
+          const remainingHours = String(Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+          const remainingMinutes = String(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+          const remainingSeconds = String(Math.floor((timeDifference % (1000 * 60)) / 1000)).padStart(2, '0');
+  
+          setDays(remainingDays);
+          setHours(remainingHours);
+          setMinutes(remainingMinutes);
+          setSeconds(remainingSeconds);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    
+   
+
+  }, [isEnded]);
 
   return (
     <>
@@ -115,10 +178,12 @@ const sideBarClose = () => {
           scrolled ? '' : ' fixed text-white border-b-[1px] backdrop-blur-[8.6px] border-b-solid border-b-[rgba(255,255,255,0.75)] xl:px-0 sm:px-[3rem] xs:px-[2rem] xxs:px-[1rem] px-[0.8rem] pb-[0.7rem] flex'
         }`}
       >
-        <button onClick={scrollToBottom} className="glass text-white py-3 px-[1rem] font-medium rounded-md">
+        <button onClick={scrollToBottom} className="glass text-white capitalize py-3 px-[1rem] font-medium rounded-md">
         {
                   address ? (
-                    <div>Buy <span className="text-[#FFA500] font-bold">$COM</span></div>
+                    <>
+                    {isFinished == true ? <div>Claim  <span className="text-[#FFA500] font-bold">$COM</span></div> : <div>Buy  <span className="text-[#FFA500] font-bold">$COM</span></div>}
+                    </>
                   ) : 'Connect'
                 }
         </button>
@@ -154,10 +219,12 @@ const sideBarClose = () => {
           <li className="hover:text-[#FFA500]"><a href="https://compad.org/?data=#About" target="_blank" rel="noopener noreferrer">About</a></li>
           <li className="hover:text-[#FFA500]"><a href="https://compad.org/?data=#Roadmap" target="_blank" rel="noopener noreferrer">Roadmap</a></li>
           <li className="hover:text-[#FFA500]"><a href="https://compad-1.gitbook.io/compad-white-paper" target="_blank" rel="noopener noreferrer">Whitepaper</a></li>
-          <button onClick={scrollToBottom} className="glass text-white py-3 px-[2rem] font-medium mt-[1.4rem] rounded-md">
+          <button onClick={scrollToBottom} className="glass capitalize text-white py-3 px-[2rem] font-medium mt-[1.4rem] rounded-md">
           {
                   address ? (
-                    <div>Buy <span className="text-[#FFA500] font-bold">$COM</span> private sale</div>
+                    <>
+                    {isFinished == true ? <div>Claim  <span className="text-[#FFA500] font-bold">$COM</span></div> : <div>Buy  <span className="text-[#FFA500] font-bold">$COM</span> private sale</div>}
+                    </>
                   ) : 'Connect Wallet'
                 }
           </button>
@@ -180,11 +247,13 @@ const sideBarClose = () => {
             </ul>
           </div>
           <div>
-            <button onClick={scrollToBottom} className="glass py-3 px-[2rem] font-medium mt-[1.4rem] rounded-md">
+            <button onClick={scrollToBottom} className="glass capitalize py-3 px-[2rem] font-medium mt-[1.4rem] rounded-md">
               
               {
                   address ? (
-                    <div>Buy <span className="text-[#FFA500] font-bold">$COM</span> private sale</div>
+                    <>
+                    {isFinished == true ? <div>Claim  <span className="text-[#FFA500] font-bold">$COM</span></div> : <div>Buy  <span className="text-[#FFA500] font-bold">$COM</span> private sale</div>}
+                    </>
                   ) : 'Connect Wallet'
                 }
             </button>

@@ -21,7 +21,9 @@ const Main = () => {
   const [bnbSold, setBnbSold] = useState(0);
   const [bnbPrice, setBnbPrice] = useState(0);
   const [bnbMade, setBnbMade] = useState(0);
-  const [isFinished, setIsFinished] = useState(0);
+  const [comBought, setComBought] = useState(0);
+  const [bnbSent, setBnbSent] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
   const [transactionHash, setTransactionHash] = useState('');
   const [days, setDays] = useState('00');
   const [hours, setHours] = useState('00');
@@ -66,7 +68,7 @@ const Main = () => {
     theme: "dark",
   });
 
-  const { data } = useReadContract({
+  const { data : isEnded } = useReadContract({
     abi: abi,
     address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
     functionName: "saleEnded",
@@ -93,6 +95,18 @@ const Main = () => {
     functionName: "tokenPrice",
     args: [],
   });
+  const { data: bnbContributed} = useReadContract({
+    abi: abi,
+    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    functionName: "contributions",
+    args: [address],
+  });
+  const { data: tokensBought} = useReadContract({
+    abi: abi,
+    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    functionName: "tokensOwed",
+    args: [address],
+  });
   
   const { status } = useTransactionConfirmations({
     hash: transactionHash,
@@ -116,25 +130,29 @@ const Main = () => {
     .catch(error => {
       console.error('Error fetching Binance Coin price:', error);
     });
-    const tPrice = convert(tokenPrice);
-    const cMade = convert(totalTokensToSell);
-    const cSold = convert(tokensSold);
-    setComMade(parseFloat(cMade).toLocaleString(undefined, {
+    setComBought(parseFloat(convert(tokensBought)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setUsdtMade(parseFloat(cMade * 0.015).toLocaleString(undefined, {
+    setBnbSent(parseFloat((convert(bnbContributed) * 0.015) /bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setComSold(parseFloat(cSold).toLocaleString(undefined, {
+    console.log(bnbContributed);
+    setComMade(parseFloat(convert(totalTokensToSell)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setUsdtSold(parseFloat(cSold * 0.015).toLocaleString(undefined, {
+    setUsdtMade(parseFloat(convert(totalTokensToSell) * 0.015).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbMade(parseFloat((cMade * 0.015) / bnbPrice).toLocaleString(undefined, {
+    setComSold(parseFloat(convert(tokensSold)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbSold(parseFloat((cSold * 0.015) / bnbPrice).toLocaleString(undefined, {
+    setUsdtSold(parseFloat(convert(tokensSold) * 0.015).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setBnbMade(parseFloat((convert(totalTokensToSell) * 0.015) / bnbPrice).toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+    }));
+    setBnbSold(parseFloat((convert(tokensSold) * 0.015) / bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     if(transactionHash !== ''){
@@ -144,7 +162,16 @@ const Main = () => {
       }, 3000);
     }
 
-    setIsFinished(data);
+    setIsFinished(isEnded);
+    if(isEnded == true){
+      // clearInterval(interval);
+        setDays('00');
+        setHours('00');
+        setMinutes('00');
+        setSeconds('00');
+        console.log('Finished private sale');
+        setIsFinished(true);
+    }
     
     const check = async (txHash, retries = 0) => {
       try {
@@ -172,8 +199,7 @@ const Main = () => {
         // notify('Error fetching transaction receipt');
       }
     }
-    
-  }, [tokenPrice, data,  totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
+  }, [tokenPrice, isEnded, bnbContributed, tokensBought,  totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
 
   async function contribute(){
     if(address){
@@ -202,6 +228,43 @@ const Main = () => {
         
        }
       } else {
+          // Add custom token to the wallet
+  const tokenAddress = "0x2Ba9f8C4ea161eAc788570FFd414eCBA4aa38eB1"; // Token contract address on BSC
+  const tokenSymbol = "COM"; // Token symbol
+  const tokenDecimals = 18; // Token decimals
+
+  if (window.ethereum && window.ethereum.isMetaMask) {
+    window.ethereum
+      .request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: tokenAddress,
+            symbol: tokenSymbol,
+            decimals: tokenDecimals,
+            image: 'https://compad-private-presale.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.4084dfe1.png&w=3840&q=75', // Optional
+            chainId: 56, // Binance Smart Chain Mainnet chain ID
+          },
+        },
+      })
+      .then(success => {
+        if (success) {
+          console.log(`${tokenSymbol} added to wallet`);
+          alert(`${tokenSymbol} added to wallet`);
+        } else {
+          console.error(`Failed to add ${tokenSymbol} to wallet`);
+          alert(`Failed to add ${tokenSymbol} to wallet`);
+        }
+      })
+      .catch(error => {
+        console.error(`Error adding ${tokenSymbol} to wallet:`, error);
+        alert(`Error adding ${tokenSymbol} to wallet:`, error);
+      });
+  } else{
+    alert('not')
+  }
+
         try {
           const tx = await writeContractAsync({
             abi: abi,
@@ -211,8 +274,23 @@ const Main = () => {
           setTransactionHash(tx);
             console.log(`Transaction Hash: ${tx}`);
         } catch (error) {
-          notify('An error occurred while processing your transaction');
-          console.error(error)
+           if (error.message.includes('Sale has not ended')) {
+            console.log(balance);
+            notify(`Presale has not ended yet`);
+          } else if (error.message.includes('No tokens to claim')) {
+            notify('Not eligible to claim.');
+            console.error(error)
+          } else if (error.message.includes(`can't claim yet`)) {
+
+            
+
+            notify('You cannot claim yet, wait till vesting is over');
+            console.error(error)
+          } else {
+            warn('Transaction processing or failed, wait a little.');
+            console.error(error)
+          }
+          // notify('An error occurred while processing your transaction claim');
         }
       }
     } 
@@ -282,36 +360,39 @@ const Main = () => {
   };
 
   useEffect(() => {
-    const endDate = new Date('2024-04-21T12:00:00');
+    const endDate = new Date('2024-04-23T00:00:00');
     endDate.setHours(endDate.getHours() + 48);
-
-    const interval = setInterval(() => {
-      const now = new Date();
-      const timeDifference = endDate - now;
-
-      if (timeDifference <= 0) {
-        clearInterval(interval);
-        setDays('00');
-        setHours('00');
-        setMinutes('00');
-        setSeconds('00');
-        console.log('Fissed');
-        setIsFinished(true);
-      } else {
-        const remainingDays = String(Math.floor(timeDifference / (1000 * 60 * 60 * 24))).padStart(2, '0');
-        const remainingHours = String(Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-        const remainingMinutes = String(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-        const remainingSeconds = String(Math.floor((timeDifference % (1000 * 60)) / 1000)).padStart(2, '0');
-
-        setDays(remainingDays);
-        setHours(remainingHours);
-        setMinutes(remainingMinutes);
-        setSeconds(remainingSeconds);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+    if(isEnded == false){
+      const interval = setInterval(() => {
+        const now = new Date();
+        const timeDifference = endDate - now;
+  
+        if (timeDifference <= 0) {
+          clearInterval(interval);
+          setDays('00');
+          setHours('00');
+          setMinutes('00');
+          setSeconds('00');
+          console.log('Finished private sale');
+          setIsFinished(true);
+        } else {
+          const remainingDays = String(Math.floor(timeDifference / (1000 * 60 * 60 * 24))).padStart(2, '0');
+          const remainingHours = String(Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+          const remainingMinutes = String(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+          const remainingSeconds = String(Math.floor((timeDifference % (1000 * 60)) / 1000)).padStart(2, '0');
+  
+          setDays(remainingDays);
+          setHours(remainingHours);
+          setMinutes(remainingMinutes);
+          setSeconds(remainingSeconds);
+        }
+      }, 1000);
+  
+      return () => clearInterval(interval);
+    }
+    
+   
+  }, [isEnded]);
   
   return (
     <>
@@ -347,7 +428,11 @@ const Main = () => {
             <div className="lg:border-l-[0.5px] border-b-[0.5px] lg:border-b-0 center w-[85%] lg:w-0 lg:h-[85%] border-b-[rgba(255,255,255,0.466)] lg:border-l-[rgba(255,255,255,0.466)]"></div>
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
               <article className="flex justify-between">
-                <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private sale Ends In</h1>
+                {
+                  isFinished != true ? 
+                  <h1 className="[@media_(min-width:400px)]:text-lg sm:text-xl font-semibold pt-1 sm:pt-2">Private sale Ends In</h1> :
+                <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-xl font-semibold pt-1 sm:pt-2">Private sale Ended</h1>
+                }
                 {/* <h1 className="text-[rgba(255,255,255,0.68)]">Raised: <span className="text-[#D03FEA] text-xl [@media_(min-width:400px)]:text-2xl sm:text-3xl font-bold">${usdtSold}</span></h1> */}
               </article>
               {/* <div className="progress-bar mt-[2rem]">
@@ -388,13 +473,24 @@ const Main = () => {
                   <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">{comSold}</h1>
                   <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/{comMade}</h1>
                 </div>
+                <div className="flex gap-[0.5rem] sm:gap-[1.5rem]">
+                  <h1 className="sm:text-lg font-semibold pt-1">Your BNB Contributed:</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">{bnbSent}</h1>
+                  {/* <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/{bnbMade}</h1> */}
+                </div>
+                <div className="flex gap-[0.5rem] sm:gap-[1.5rem]">
+                  <h1 className="sm:text-lg font-semibold pt-1"><span className="text-[#FFA500]">$COM</span> left to claim:</h1>
+                  <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold">{comBought}</h1>
+                  {/* <h1 className="text-lg [@media_(min-width:400px)]:text-xl sm:text-2xl font-semibold text-[rgba(255,255,255,0.68)]">/{comMade}</h1> */}
+                </div>
               </article>
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
                 <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.015</h1>
               </article>
-              <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
+              {
+                isFinished != true ? <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
                 <div className="w-full sm:w-[50%]">
                   <div className="flex justify-between font-light">
                     <h1>BNB you pay</h1>
@@ -437,12 +533,13 @@ const Main = () => {
                     /></p>
                   </div>
                 </div>
-              </section>
-              <button onClick={contribute} className="bg-[linear-gradient(to_right,_#8e49e9,_#FA5441)] w-full py-[0.5rem] mt-[2rem] rounded-lg text-center font-bold text-lg capitalize">
+              </section> :<></>
+              }
+              <button onClick={contribute} className="bg-[linear-gradient(to_right,_#8e49e9,_#FA5441)] capitalize w-full py-[0.5rem] mt-[2rem] rounded-lg text-center font-bold text-lg capitalize">
                 {
                   address ? (
                     <>
-                    {data ? "claim" : <div>Buy  <span className="text-[#FFA500] font-bold">$COM</span></div>}
+                    {isFinished == true ? <div>Claim  <span className="text-[#FFA500] font-bold">$COM</span></div> : <div>Buy  <span className="text-[#FFA500] font-bold">$COM</span></div>}
                     </>
                   ) : 'Connect Wallet'
                 }
