@@ -233,7 +233,7 @@ const Main = () => {
   const tokenSymbol = "COM"; // Token symbol
   const tokenDecimals = 18; // Token decimals
 
-  if (window.ethereum && window.ethereum.isMetaMask) {
+  if (window.ethereum) {
     window.ethereum
       .request({
         method: 'wallet_watchAsset',
