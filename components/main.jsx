@@ -322,7 +322,7 @@ switchToBSC();
         .request({
           method: 'wallet_watchAsset',
           params: {
-            type: 'BEP20',
+            type: 'ERC20',
             options: {
               address: tokenAddress,
               name: tokenName,
