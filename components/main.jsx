@@ -9,6 +9,10 @@ import Web3 from "web3";
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+
+
+
 
 const Main = () => {
   const [limitError, setLimitError] = useState(false);
@@ -35,6 +39,15 @@ const Main = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { open } = useWeb3Modal()
+  // const walletConnectProvider = new WalletConnectProvider({
+  //   rpc: {
+  //     56: 'https://bsc-dataseed.binance.org/', // Binance Smart Chain Mainnet RPC URL
+  //     97: 'https://data-seed-prebsc-1-s1.binance.org:8545/' // Binance Smart Chain Testnet RPC URL
+  //   },
+  //   chainId: 56, // Binance Smart Chain Mainnet chain ID
+  //   network: 'binance', // Optional. Supported networks are 'ethereum', 'binance', 'arbitrum', 'polygon', 'solana', 'xdai', 'fantom', 'avalanche', 'okexchain', 'ronin', 'heco', 'moonriver', 'thundercore', 'smartchain'
+  //   bridge: 'https://relay.walletconnect.com' // Optional. Bridge URL for WalletConnect
+  // });
 
   const notify = (message) => toast.error(message, {
     position: "top-right",
@@ -229,42 +242,9 @@ const Main = () => {
        }
       } else {
           // Add custom token to the wallet
-  const tokenAddress = "0x2Ba9f8C4ea161eAc788570FFd414eCBA4aa38eB1"; // Token contract address on BSC
-  const tokenSymbol = "COM"; // Token symbol
-  const tokenDecimals = 18; // Token decimals
+ 
 
-  if (window.ethereum) {
-    window.ethereum
-      .request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: {
-            address: tokenAddress,
-            symbol: tokenSymbol,
-            decimals: tokenDecimals,
-            image: 'https://compad-private-presale.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.4084dfe1.png&w=3840&q=75', // Optional
-            chainId: 56, // Binance Smart Chain Mainnet chain ID
-          },
-        },
-      })
-      .then(success => {
-        if (success) {
-          console.log(`${tokenSymbol} added to wallet`);
-          alert(`${tokenSymbol} added to wallet`);
-        } else {
-          console.error(`Failed to add ${tokenSymbol} to wallet`);
-          alert(`Failed to add ${tokenSymbol} to wallet`);
-        }
-      })
-      .catch(error => {
-        console.error(`Error adding ${tokenSymbol} to wallet:`, error);
-        alert(`Error adding ${tokenSymbol} to wallet:`, error);
-      });
-  } else{
-    alert('not')
-  }
-
+switchToBSC();
         try {
           const tx = await writeContractAsync({
             abi: abi,
@@ -308,6 +288,73 @@ const Main = () => {
   
     return number;
   }
+
+  const switchToBSC = async () => {
+    try {
+      await walletConnectProvider.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: '0x38', // Binance Smart Chain Mainnet chain ID
+          chainName: 'Binance Smart Chain Mainnet',
+          nativeCurrency: {
+            name: 'BNB',
+            symbol: 'BNB',
+            decimals: 18,
+          },
+          rpcUrls: ['https://bsc-dataseed1.binance.org/'],
+          blockExplorerUrls: ['https://bscscan.com/'],
+        }],
+      });
+      console.log('Switched to Binance Smart Chain');
+    } catch (error) {
+      console.error('Error switching to Binance Smart Chain:', error);
+    }
+  };
+  
+  const addToWallet = async () => {
+    const tokenAddress = "0x2Ba9f8C4ea161eAc788570FFd414eCBA4aa38eB1"; // Token contract address on BSC
+    const tokenSymbol = "COM"; // Token symbol
+    const tokenDecimals = 18; // Token decimals
+    const tokenName = 'Compad'; // Token decimals
+  
+    if (window.ethereum) {
+      window.ethereum
+        .request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address: tokenAddress,
+              symbol: tokenSymbol,
+              decimals: tokenDecimals,
+              name: tokenName,
+              image: 'https://compad-private-presale.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.4084dfe1.png&w=3840&q=75', // Optional
+              chainId: 56, // Binance Smart Chain Mainnet chain ID
+            },
+          },
+        })
+        .then(passed => {
+          if (passed) {
+            console.log(`${tokenSymbol} added to wallet`);
+            success(`${tokenSymbol} added to wallet`);
+          } else {
+            console.error(`Failed to add ${tokenSymbol} to wallet`);
+            notify(`Failed to add ${tokenSymbol} to wallet`);
+          }
+        })
+        .catch(error => {
+          console.error(`Error adding ${tokenSymbol} to wallet:`, error);
+          notify(`Error adding ${tokenSymbol} to wallet`);
+        });
+    } else{
+      notify(`Try again in your wallet's DApp browser.`)
+    }
+  };
+  
+  // Call these functions when needed
+  // switchToBSC();
+  // addCustomToken();
+  
 
   // const progressStyle = () => {
   //   const progressValue = removeCommasAndConvertToNumber(usdtSold);
@@ -359,6 +406,7 @@ const Main = () => {
     setBnbAmount(result);
   };
 
+
   useEffect(() => {
     const endDate = new Date('2024-04-23T00:00:00');
     endDate.setHours(endDate.getHours() + 48);
@@ -402,7 +450,7 @@ const Main = () => {
             Buy <span className="text-[#FFA500] font-bold">$COM</span> private sale
           </h1>
           <div className="glass relative w-full h-fit py-[2rem] flex flex-col lg:flex-row mt-[3rem]">
-            <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
+            <div className="w-[100%]  lg:w-[50%] px-[1rem] relative md:px-[2rem]">
               <div className="grid grid-cols-2">
                 <h1 className="text-lg">Token name:</h1>
                 <h1 className="text-lg font-semibold ml-[10%] text-[rgba(255,255,255,0.8)] text-end">Compad</h1>
@@ -419,11 +467,14 @@ const Main = () => {
                 <h1 className="mt-[2rem] text-lg">Maximum Buy:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">2BNB</h1>
               </div>
-              <div className="grid grid-cols-3">
+              <div className="grid mb-[2rem] grid-cols-3">
                 <h1 className="mt-[2rem] text-lg">Vesting Schedule:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)]">50% TGE</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] text-[rgba(255,255,255,0.8)] text-end">25% every 30 days</h1>
               </div>
+              {/* <div className="relative w-full "> */}
+              <button onClick={addToWallet} className="bg-[linear-gradient(to_right,_#8e49e9,_#FA5441)] capitalize w-full lg:w-[70%] py-[0.5rem] mt-[2rem] left-0 right-0 mx-auto rounded-lg text-center font-bold lg:absolute bottom-0 text-lg capitalize">Add <span className="text-[#FFA500] font-bold">$COM</span> to wallet</button>
+              {/* </div> */}
             </div>
             <div className="lg:border-l-[0.5px] border-b-[0.5px] lg:border-b-0 center w-[85%] lg:w-0 lg:h-[85%] border-b-[rgba(255,255,255,0.466)] lg:border-l-[rgba(255,255,255,0.466)]"></div>
             <div className="w-[100%] lg:w-[50%] px-[1rem] md:px-[2rem]">
