@@ -347,7 +347,7 @@ switchToBSC();
           notify(`Error adding ${tokenSymbol} to wallet`);
         });
     } else{
-      notify(`Try again in your wallet's DApp browser.`)
+      notify(`Copy the link to your wallet's DApp browser and try again.`)
     }
   };
   
