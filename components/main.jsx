@@ -315,7 +315,7 @@ switchToBSC();
     const tokenAddress = "0x2Ba9f8C4ea161eAc788570FFd414eCBA4aa38eB1"; // Token contract address on BSC
     const tokenSymbol = "COM"; // Token symbol
     const tokenDecimals = 18; // Token decimals
-    const tokenName = 'Compad'; // Token decimals
+    const tokenName = 'Compad Coin'; // Token decimals
   
     if (window.ethereum) {
       window.ethereum
@@ -325,9 +325,9 @@ switchToBSC();
             type: 'ERC20',
             options: {
               address: tokenAddress,
+              name: tokenName,
               symbol: tokenSymbol,
               decimals: tokenDecimals,
-              name: tokenName,
               image: 'https://compad-private-presale.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.4084dfe1.png&w=3840&q=75', // Optional
               chainId: 56, // Binance Smart Chain Mainnet chain ID
             },
