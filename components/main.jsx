@@ -27,7 +27,8 @@ const Main = () => {
   const [hours, setHours] = useState('00');
   const [minutes, setMinutes] = useState('00');
   const [seconds, setSeconds] = useState('00');
-  const web3 = new Web3('https://bsc-dataseed.binance.org:8545');
+  const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
+  // const web3 = new Web3('https://bsc-dataseed.binance.org:8545');
   const [mounted, setMounted] = useState(false);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
