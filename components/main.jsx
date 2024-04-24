@@ -208,7 +208,10 @@ const Main = () => {
         }
       } catch (error) {
         console.error('Error fetching transaction receipt:', error);
-        warn('Transaction processing');
+        warn('Transaction processing: your bnb contributed will be updated');
+        setTimeout(() => {
+            window.location.reload();
+          }, 3000);
         // notify('Error fetching transaction receipt');
       }
     }
