@@ -83,40 +83,40 @@ const Main = () => {
 
   const { data : isEnded } = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "saleEnded",
     args: [],
   })
 
   const {data : tokensSold} = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "tokensSold",
     args: [],
   });
 
   const {data : totalTokensToSell} = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "totalTokensToSell",
     args: [],
   });
 
   const { data: tokenPrice} = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "tokenPrice",
     args: [],
   });
   const { data: bnbContributed} = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "contributions",
     args: [address],
   });
   const { data: tokensBought} = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "tokensOwed",
     args: [address],
   });
@@ -223,7 +223,7 @@ const Main = () => {
         try {
           const tx = await writeContractAsync({
             abi: abi,
-            address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+            address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
             functionName: "contribute",
             value: Web3.utils.toBigInt(Web3.utils.toWei(bnbAmount, "ether"))
           })
@@ -248,7 +248,7 @@ switchToBSC();
         try {
           const tx = await writeContractAsync({
             abi: abi,
-            address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+            address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
             functionName: "claim",
           })
           setTransactionHash(tx);

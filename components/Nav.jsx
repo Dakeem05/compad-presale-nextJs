@@ -29,7 +29,7 @@ const Nav = () => {
 
   const { data : isEnded } = useReadContract({
     abi: abi,
-    address: "0xe4a75304eeDD68d3eFA1Fc4a05b2DD1472067a83",
+    address: "0xa0584c52752b63a4A77479c384902B05861C07E6",
     functionName: "saleEnded",
     args: [],
   })
