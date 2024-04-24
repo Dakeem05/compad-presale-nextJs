@@ -453,7 +453,7 @@ switchToBSC();
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.015</h1>
                 <h1 className="mt-[2rem] text-lg">Total supply:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">30 million COM (3%)</h1>
-                <h1 className="mt-[2rem] text-lg">Private sale Goal:</h1>
+                <h1 className="mt-[2rem] text-lg">Private Sale Goal:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">{bnbMade}BNB</h1>
                 <h1 className="mt-[2rem] text-lg">Minimum Buy:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.2BNB</h1>

@@ -22,14 +22,14 @@ export default function RootLayout({ children }) {
         {/* <link rel="icon" type="image/x-icon" href="@/public/favicon.ico" /> */}
         <title>Compad | Private Presale</title>
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://compad-presale.vercel.app/" />
-        <meta property="og:title" content="Compad | Private Presale" />
-        <meta property="og:description" content="Compad private presale website" />
+        <meta property="og:url" content="https://privatesale.compad.org" />
+        <meta property="og:title" content="Compad | Private Sale" />
+        <meta property="og:description" content="Compad private sale website" />
         <meta property="og:image" content="https://pbs.twimg.com/profile_images/1685353964450004993/7q2iSxcW_400x400.jpg" />
         <meta name="twitter:card" content="Compad private presale website" />
         <meta name="twitter:url" content="https://x.com/Compadofficial?t=O7E36yY3IgiypnzQ9f9MwQ&s=09" />
-        <meta name="twitter:title" content="Compad | Private Presale" />
-        <meta name="twitter:description" content="Compad private presale website" />
+        <meta name="twitter:title" content="Compad | Private Sale" />
+        <meta name="twitter:description" content="Compad private sale website" />
         <meta name="twitter:image" content="https://pbs.twimg.com/profile_images/1685353964450004993/7q2iSxcW_400x400.jpg" />
         <meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"/>
       </head>
