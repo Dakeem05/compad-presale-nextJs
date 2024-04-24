@@ -363,13 +363,6 @@ switchToBSC();
   //   return { width: `${progressPercentage}%` };
   // };
 
-  // const indicatorStyle = () => {
-  //   const progressValue = removeCommasAndConvertToNumber(usdtSold);
-  //   const totalValue = removeCommasAndConvertToNumber(usdtMade);
-  //   const progressPercentage = (progressValue / totalValue) * 100;
-  //   return { left: `calc(${progressPercentage}% - 5px)` };
-  // };
-
   const bnbSubmitHandler = (e) => {
     setLimitError(false);
     if (e < 0.2 || e > 2) {
