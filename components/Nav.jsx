@@ -135,7 +135,7 @@ const sideBarClose = () => {
   }, [isEnded]);
 
   useEffect(() => {
-    const endDate = new Date('2024-04-23T00:00:00');
+    const endDate = new Date('2024-04-24T12:00:00');
     endDate.setHours(endDate.getHours() + 48);
     if(isEnded == false){
       const interval = setInterval(() => {
@@ -198,7 +198,7 @@ const sideBarClose = () => {
         <p className="text-white absolute right-[0.5rem] text-1rem pr-[1rem] mt-[1rem] ">
           {isSide == false ? 
           <button onClick={sideBarOpen}>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[1.5rem] h-[1.5rem]" viewBox="0 0 42 29" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-[1.5rem] h-[1.5rem]" viewBox="0 0 42 29" fill="currentColor">
           <path d="M1.00667 1H41M1 14.3311H40.9833M1.00667 27.6622H40.9833" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button> :

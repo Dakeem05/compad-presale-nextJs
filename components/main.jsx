@@ -408,7 +408,7 @@ switchToBSC();
 
 
   useEffect(() => {
-    const endDate = new Date('2024-04-23T00:00:00');
+    const endDate = new Date('2024-04-24T12:00:00');
     endDate.setHours(endDate.getHours() + 48);
     if(isEnded == false){
       const interval = setInterval(() => {
