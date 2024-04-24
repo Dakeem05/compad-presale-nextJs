@@ -146,7 +146,7 @@ const Main = () => {
     setComBought(parseFloat(convert(tokensBought)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbSent(parseFloat((convert(bnbContributed) * 0.015) /bnbPrice).toLocaleString(undefined, {
+    setBnbSent(parseFloat(convert(bnbContributed) / bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     console.log(bnbContributed);
