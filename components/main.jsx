@@ -24,6 +24,7 @@ const Main = () => {
   const [usdtSold, setUsdtSold] = useState(0);
   const [bnbSold, setBnbSold] = useState(0);
   const [bnbPrice, setBnbPrice] = useState(0);
+  const [comPrice, setComPrice] = useState(0);
   const [etherPrice, setEtherPrice] = useState(0);
   const [bnbMade, setBnbMade] = useState(0);
   const [comBought, setComBought] = useState(0);
@@ -34,8 +35,8 @@ const Main = () => {
   const [hours, setHours] = useState('00');
   const [minutes, setMinutes] = useState('00');
   const [seconds, setSeconds] = useState('00');
-  const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
-  // const web3 = new Web3('https://bsc-dataseed.binance.org:8545');
+  // const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
+  const web3 = new Web3('https://bsc-dataseed.binance.org:8545');
   const [mounted, setMounted] = useState(false);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -169,6 +170,7 @@ const Main = () => {
     setComSold(parseFloat(convert(tokensSold)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
+    setComPrice(convert(tokenPrice));
     setUsdtSold(parseFloat(convert(tokensSold) * 0.015).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
@@ -180,14 +182,14 @@ const Main = () => {
     setBnbSold(parseFloat((convert(tokensSold) / convert(tokenPrice))).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    console.log(convert(tokenPrice));
-    console.log(convert(tokensSold) * 0.015/ (bnbPrice));
-    console.log(etherPrice)
-    console.log((0.2 * convert(tokenPrice)));
-    // console.log((convert(tokensSold) / convert(tokenPrice)));
-    console.log((convert(totalTokensToSell) / convert(tokenPrice)));
-    console.log((convert(tokensSold) * convert(tokenPrice)) / bnbPrice);
-    console.log(bnbValueInUSDT / 0.015);
+    // console.log(convert(tokenPrice));
+    // console.log(convert(tokensSold) * 0.015/ (bnbPrice));
+    // console.log(etherPrice)
+    // console.log((0.2 * convert(tokenPrice)));
+    // // console.log((convert(tokensSold) / convert(tokenPrice)));
+    // console.log((convert(totalTokensToSell) / convert(tokenPrice)));
+    // console.log((convert(tokensSold) * convert(tokenPrice)) / bnbPrice);
+    // console.log(bnbValueInUSDT / 0.015);
     if(transactionHash !== ''){
       console.log(transactionHash);
       setTimeout(() => {
@@ -393,8 +395,9 @@ const Main = () => {
       setBnbAmount('');
       return;
     }
-    let rate = 0.015 / bnbPrice;
-    setComAmount(e / rate);
+    // let rate = 0.015 / bnbPrice;
+    setComAmount(e * comPrice);
+    // setComAmount(e / rate);
   };
 
   const typing = () => {
@@ -403,14 +406,16 @@ const Main = () => {
 
   const maxHandler = () => {
     setBnbAmount(2);
-    let rate = 0.015 / bnbPrice;
-    setComAmount(e / rate);
+    // let rate = 0.015 / bnbPrice;
+    // setComAmount(e / rate);
+    setComAmount(e * comPrice);
   }
 
   const comSubmitHandler = (e) => {
     setLimitError(false);
-    let rate = 0.015 / bnbPrice;
-    let result = e * rate;    
+    // let rate = 0.015 / bnbPrice;
+    let result = e / comPrice;    
+    // let result = e * rate;    
     if (result < 0.2 || result > 2) {
         setLimitError(true);
         setBnbAmount('');
@@ -554,7 +559,7 @@ const Main = () => {
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
-                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.01500</h1>
+                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.015</h1>
               </article>
               {
                 isFinished != true ? <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
