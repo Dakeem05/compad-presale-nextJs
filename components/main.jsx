@@ -3,16 +3,12 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import mainImage from "./images/logo.png"
 import './main.css';
-import { useAccount, useReadContract, useWriteContract, useBalance, useTransactionConfirmations } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useBalance} from "wagmi";
 import abi from "../contracts/contract-abi.json";
 import Web3 from "web3";
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-
-
-
 
 const Main = () => {
   const [limitError, setLimitError] = useState(false);
@@ -23,33 +19,23 @@ const Main = () => {
   const [usdtMade, setUsdtMade] = useState(0);
   const [usdtSold, setUsdtSold] = useState(0);
   const [bnbSold, setBnbSold] = useState(0);
-  const [bnbPrice, setBnbPrice] = useState(0);
   const [comPrice, setComPrice] = useState(0);
-  const [etherPrice, setEtherPrice] = useState(0);
+  const [comUsdtPrice, setComUsdtPrice] = useState(0);
   const [bnbMade, setBnbMade] = useState(0);
   const [comBought, setComBought] = useState(0);
   const [bnbSent, setBnbSent] = useState(0);
+  const [bnbPrice, setBnbPrice] = useState(0);
+  const [etherPrice, setEtherPrice] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [transactionHash, setTransactionHash] = useState('');
   const [days, setDays] = useState('00');
   const [hours, setHours] = useState('00');
   const [minutes, setMinutes] = useState('00');
   const [seconds, setSeconds] = useState('00');
-  // const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
   const web3 = new Web3('https://bsc-dataseed.binance.org:8545');
-  const [mounted, setMounted] = useState(false);
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { open } = useWeb3Modal()
-  // const walletConnectProvider = new WalletConnectProvider({
-  //   rpc: {
-  //     56: 'https://bsc-dataseed.binance.org/', // Binance Smart Chain Mainnet RPC URL
-  //     97: 'https://data-seed-prebsc-1-s1.binance.org:8545/' // Binance Smart Chain Testnet RPC URL
-  //   },
-  //   chainId: 56, // Binance Smart Chain Mainnet chain ID
-  //   network: 'binance', // Optional. Supported networks are 'ethereum', 'binance', 'arbitrum', 'polygon', 'solana', 'xdai', 'fantom', 'avalanche', 'okexchain', 'ronin', 'heco', 'moonriver', 'thundercore', 'smartchain'
-  //   bridge: 'https://relay.walletconnect.com' // Optional. Bridge URL for WalletConnect
-  // });
 
   const notify = (message) => toast.error(message, {
     position: "top-right",
@@ -123,16 +109,11 @@ const Main = () => {
     args: [address],
   });
   
-  const { status } = useTransactionConfirmations({
-    hash: transactionHash,
-  });
-
   const balance = useBalance({
     address: address,
   })
 
   useEffect(() => {
-    setMounted(true)
     function convert (token){
       return Web3.utils.fromWei(token == undefined ? 0 : token, "ether");
     }
@@ -140,20 +121,17 @@ const Main = () => {
     .then(response => response.json())
     .then(data => {
       const bnbPriceUSD = data.binancecoin.usd;
-      setBnbPrice(bnbPriceUSD);
+      // console.log(typeof bnbPriceUSD);
+      if(typeof bnbPriceUSD !== 'number'){
+        setBnbPrice(localStorage.getItem("bnbPrice") == null? 0 : localStorage.getItem("bnbPrice"));
+        localStorage.setItem("bnbPrice", 0);
+      } else {
+        setBnbPrice(bnbPriceUSD);
+        localStorage.setItem("bnbPrice", bnbPriceUSD);
+      }
     })
-    .catch(error => {
-      console.error('Error fetching Binance Coin price:', error);
-    });
-    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
-    .then(response => response.json())
-    .then(data => {
-      const ethPriceUSD = data.ethereum.usd;
-      setEtherPrice(ethPriceUSD);
-    })
-    .catch(error => {
-      console.error('Error fetching Binance Coin price:', error);
-    });
+    setComPrice(convert(tokenPrice));
+    setComUsdtPrice((bnbPrice / (1 * comPrice)).toFixed(5))
     setComBought(parseFloat(convert(tokensBought)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
@@ -164,32 +142,21 @@ const Main = () => {
     setComMade(parseFloat(convert(totalTokensToSell)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setUsdtMade(parseFloat(convert(totalTokensToSell) * 0.015).toLocaleString(undefined, {
+    setUsdtMade(parseFloat(convert(totalTokensToSell) * comUsdtPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     setComSold(parseFloat(convert(tokensSold)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setComPrice(convert(tokenPrice));
-    setUsdtSold(parseFloat(convert(tokensSold) * 0.015).toLocaleString(undefined, {
+    setUsdtSold(parseFloat(convert(tokensSold) * comUsdtPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    // let rate = 0.015 / bnbPrice;
-    // const bnbValueInUSDT = 1.4 * bnbPrice;
     setBnbMade(parseFloat((convert(totalTokensToSell) / convert(tokenPrice))).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     setBnbSold(parseFloat((convert(tokensSold) / convert(tokenPrice))).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    // console.log(convert(tokenPrice));
-    // console.log(convert(tokensSold) * 0.015/ (bnbPrice));
-    // console.log(etherPrice)
-    // console.log((0.2 * convert(tokenPrice)));
-    // // console.log((convert(tokensSold) / convert(tokenPrice)));
-    // console.log((convert(totalTokensToSell) / convert(tokenPrice)));
-    // console.log((convert(tokensSold) * convert(tokenPrice)) / bnbPrice);
-    // console.log(bnbValueInUSDT / 0.015);
     if(transactionHash !== ''){
       console.log(transactionHash);
       setTimeout(() => {
@@ -199,7 +166,6 @@ const Main = () => {
 
     setIsFinished(isEnded);
     if(isEnded == true){
-      // clearInterval(interval);
         setDays('00');
         setHours('00');
         setMinutes('00');
@@ -208,22 +174,21 @@ const Main = () => {
         setIsFinished(true);
     }
     
+    //Function that handles the checking of transaction receipts
     const check = async (txHash, retries = 0) => {
       try {
         const receipt = await web3.eth.getTransactionReceipt(txHash);
-    
         if (receipt && receipt.status === 1n) {
           console.log('Transaction successful:', receipt);
           success('Transaction successful');
-          // Optionally reload the page after successful transaction
           setTimeout(() => {
             window.location.reload();
           }, 3000);
-        } else if (retries < 10) { // Limit retries to prevent infinite loop
+        } else if (retries < 10) { 
           console.log('Transaction processing or failed, wait a little.');
           setTimeout(() => {
-            check(txHash, retries + 1); // Recursive call
-          }, 5000); // Retry after 5 seconds
+            check(txHash, retries + 1);
+          }, 5000); 
         } else {
           console.log('Transaction failed after retries:', receipt);
           warn('Transaction failed after retries');
@@ -234,10 +199,12 @@ const Main = () => {
         setTimeout(() => {
             window.location.reload();
           }, 3000);
-        // notify('Error fetching transaction receipt');
       }
     }
   }, [tokenPrice, isEnded, bnbContributed, tokensBought,  totalTokensToSell, tokensSold, comMade, comSold, usdtMade, usdtSold, transactionHash, web3.eth]);
+
+
+  //Functions that carry out the contribution or claiming 
 
   async function contribute(){
     if(address){
@@ -245,6 +212,8 @@ const Main = () => {
        if(bnbAmount < 0.2 || bnbAmount > 2){
         notify('Your BNB amount must be between 0.2 and 2');
       } else {
+
+        // The logic that handles the contribution
         try {
           const tx = await writeContractAsync({
             abi: abi,
@@ -266,10 +235,8 @@ const Main = () => {
         
        }
       } else {
-          // Add custom token to the wallet
- 
 
-// switchToBSC();
+        //The logic that handles token claiming
         try {
           const tx = await writeContractAsync({
             abi: abi,
@@ -286,16 +253,12 @@ const Main = () => {
             notify('Not eligible to claim.');
             console.error(error)
           } else if (error.message.includes(`can't claim yet`)) {
-
-            
-
             notify('You cannot claim yet, wait till vesting is over');
             console.error(error)
           } else {
             warn('Transaction processing or failed, wait a little.');
             console.error(error)
           }
-          // notify('An error occurred while processing your transaction claim');
         }
       }
     } 
@@ -303,39 +266,8 @@ const Main = () => {
       open();
     }
   }
-
-  function removeCommasAndConvertToNumber(formattedNumber) {
-    if (typeof formattedNumber !== 'string') {
-      return null;
-    }
-    const numberWithNoCommas = formattedNumber.replace(/,/g, '');
-    const number = parseFloat(numberWithNoCommas);
   
-    return number;
-  }
-
-  const switchToBSC = async () => {
-    try {
-      await walletConnectProvider.request({
-        method: 'wallet_addEthereumChain',
-        params: [{
-          chainId: '0x38', // Binance Smart Chain Mainnet chain ID
-          chainName: 'Binance Smart Chain Mainnet',
-          nativeCurrency: {
-            name: 'BNB',
-            symbol: 'BNB',
-            decimals: 18,
-          },
-          rpcUrls: ['https://bsc-dataseed1.binance.org/'],
-          blockExplorerUrls: ['https://bscscan.com/'],
-        }],
-      });
-      console.log('Switched to Binance Smart Chain');
-    } catch (error) {
-      console.error('Error switching to Binance Smart Chain:', error);
-    }
-  };
-  
+  //The function that adds the token to the wallet
   const addToWallet = async () => {
     const tokenAddress = "0x2Ba9f8C4ea161eAc788570FFd414eCBA4aa38eB1"; // Token contract address on BSC
     const tokenSymbol = "COM"; // Token symbol
@@ -376,18 +308,7 @@ const Main = () => {
     }
   };
   
-  // Call these functions when needed
-  // switchToBSC();
-  // addCustomToken();
-  
-
-  // const progressStyle = () => {
-  //   const progressValue = removeCommasAndConvertToNumber(usdtSold);
-  //   const totalValue = removeCommasAndConvertToNumber(usdtMade);
-  //   const progressPercentage = (progressValue / totalValue) * 100;
-  //   return { width: `${progressPercentage}%` };
-  // };
-
+  //The function that handles the conversion from bnb to $com
   const bnbSubmitHandler = (e) => {
     setLimitError(false);
     if (e < 0.2 || e > 2) {
@@ -395,27 +316,24 @@ const Main = () => {
       setBnbAmount('');
       return;
     }
-    // let rate = 0.015 / bnbPrice;
     setComAmount(e * comPrice);
-    // setComAmount(e / rate);
   };
 
+  //The function that clears the error message once a user starts typing again
   const typing = () => {
     setLimitError(false);
   };
 
+  //The function that handles the max button, set's bnbAmount to 2 and comAmount to the max value
   const maxHandler = () => {
     setBnbAmount(2);
-    // let rate = 0.015 / bnbPrice;
-    // setComAmount(e / rate);
     setComAmount(e * comPrice);
   }
 
+  //The function that handles the converrsion from $com to bnb
   const comSubmitHandler = (e) => {
     setLimitError(false);
-    // let rate = 0.015 / bnbPrice;
-    let result = e / comPrice;    
-    // let result = e * rate;    
+    let result = e / comPrice;   
     if (result < 0.2 || result > 2) {
         setLimitError(true);
         setBnbAmount('');
@@ -427,6 +345,7 @@ const Main = () => {
     setBnbAmount(result);
   };
 
+  // The use effect that handles the timer and the countdown
 
   useEffect(() => {
     const endDate = new Date('2024-04-24T20:30:00');
@@ -478,7 +397,7 @@ const Main = () => {
                 <h1 className="mt-[2rem] text-lg">Ticker symbol:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">$COM</h1>
                 <h1 className="mt-[2rem] text-lg">Private Sale Price:</h1>
-                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">0.015</h1>
+                <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">{comUsdtPrice}</h1>
                 <h1 className="mt-[2rem] text-lg">Total supply:</h1>
                 <h1 className="mt-[2rem] text-lg ml-[10%] font-semibold text-[rgba(255,255,255,0.8)] text-end">30 million COM (3%)</h1>
                 <h1 className="mt-[2rem] text-lg">Private Sale Goal:</h1>
@@ -559,7 +478,7 @@ const Main = () => {
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
-                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.015</h1>
+                <h1 className="text-3xl sm:text-4xl text-center font-bold">${comUsdtPrice}</h1>
               </article>
               {
                 isFinished != true ? <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
