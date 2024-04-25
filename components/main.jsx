@@ -24,6 +24,7 @@ const Main = () => {
   const [usdtSold, setUsdtSold] = useState(0);
   const [bnbSold, setBnbSold] = useState(0);
   const [bnbPrice, setBnbPrice] = useState(0);
+  const [etherPrice, setEtherPrice] = useState(0);
   const [bnbMade, setBnbMade] = useState(0);
   const [comBought, setComBought] = useState(0);
   const [bnbSent, setBnbSent] = useState(0);
@@ -143,10 +144,19 @@ const Main = () => {
     .catch(error => {
       console.error('Error fetching Binance Coin price:', error);
     });
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+    .then(response => response.json())
+    .then(data => {
+      const ethPriceUSD = data.ethereum.usd;
+      setEtherPrice(ethPriceUSD);
+    })
+    .catch(error => {
+      console.error('Error fetching Binance Coin price:', error);
+    });
     setComBought(parseFloat(convert(tokensBought)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbSent(parseFloat(convert(bnbContributed) / bnbPrice).toLocaleString(undefined, {
+    setBnbSent(parseFloat(convert(bnbContributed)).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     console.log(bnbContributed);
@@ -162,12 +172,21 @@ const Main = () => {
     setUsdtSold(parseFloat(convert(tokensSold) * 0.015).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
+    let rate = 0.015 / bnbPrice;
+    const bnbValueInUSDT = 1.4 * bnbPrice;
     setBnbMade(parseFloat((convert(totalTokensToSell) * 0.015) / bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     setBnbSold(parseFloat((convert(tokensSold) * 0.015) / bnbPrice).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
+    console.log(convert(tokenPrice));
+    console.log(convert(tokensSold) * 0.015/ (bnbPrice));
+    console.log(etherPrice)
+    console.log((0.2 * convert(tokenPrice)));
+    console.log((convert(tokensSold) / convert(tokenPrice)));
+    console.log((convert(tokensSold) * convert(tokenPrice)) / bnbPrice);
+    console.log(bnbValueInUSDT / 0.015);
     if(transactionHash !== ''){
       console.log(transactionHash);
       setTimeout(() => {
@@ -534,7 +553,7 @@ switchToBSC();
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
-                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.015</h1>
+                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.0150</h1>
               </article>
               {
                 isFinished != true ? <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
