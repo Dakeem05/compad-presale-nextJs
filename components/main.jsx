@@ -174,17 +174,18 @@ const Main = () => {
     }));
     let rate = 0.015 / bnbPrice;
     const bnbValueInUSDT = 1.4 * bnbPrice;
-    setBnbMade(parseFloat((convert(totalTokensToSell) * 0.015) / bnbPrice).toLocaleString(undefined, {
+    setBnbMade(parseFloat((convert(totalTokensToSell) / convert(tokenPrice))).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    setBnbSold(parseFloat((convert(tokensSold) * 0.015) / bnbPrice).toLocaleString(undefined, {
+    setBnbSold(parseFloat((convert(tokensSold) / convert(tokenPrice))).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
     console.log(convert(tokenPrice));
     console.log(convert(tokensSold) * 0.015/ (bnbPrice));
     console.log(etherPrice)
     console.log((0.2 * convert(tokenPrice)));
-    console.log((convert(tokensSold) / convert(tokenPrice)));
+    // console.log((convert(tokensSold) / convert(tokenPrice)));
+    console.log((convert(totalTokensToSell) / convert(tokenPrice)));
     console.log((convert(tokensSold) * convert(tokenPrice)) / bnbPrice);
     console.log(bnbValueInUSDT / 0.015);
     if(transactionHash !== ''){
@@ -266,7 +267,7 @@ const Main = () => {
           // Add custom token to the wallet
  
 
-switchToBSC();
+// switchToBSC();
         try {
           const tx = await writeContractAsync({
             abi: abi,
@@ -553,7 +554,7 @@ switchToBSC();
               <article className="w-fit mx-auto mt-[1rem]">
                 <h1 className="text-xl text-center font-semibold">1 <span className="text-[#FFA500]">$COM</span></h1>
                 <h1 className="text-center text-2xl font-semibold rotate-90">=</h1>
-                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.0150</h1>
+                <h1 className="text-3xl sm:text-4xl text-center font-bold">$0.01500</h1>
               </article>
               {
                 isFinished != true ? <section className="flex flex-col sm:flex-row gap-[2rem] mt-[1rem]">
