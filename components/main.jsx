@@ -174,8 +174,8 @@ const Main = () => {
     setUsdtSold(parseFloat(convert(tokensSold) * 0.015).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
-    let rate = 0.015 / bnbPrice;
-    const bnbValueInUSDT = 1.4 * bnbPrice;
+    // let rate = 0.015 / bnbPrice;
+    // const bnbValueInUSDT = 1.4 * bnbPrice;
     setBnbMade(parseFloat((convert(totalTokensToSell) / convert(tokenPrice))).toLocaleString(undefined, {
       maximumFractionDigits: 6,
     }));
