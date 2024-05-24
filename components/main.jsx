@@ -27,6 +27,7 @@ const Main = () => {
   const [bnbPrice, setBnbPrice] = useState(0);
   const [etherPrice, setEtherPrice] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
   const [transactionHash, setTransactionHash] = useState('');
   const [days, setDays] = useState('00');
   const [hours, setHours] = useState('00');
@@ -158,7 +159,7 @@ const Main = () => {
       maximumFractionDigits: 6,
     }));
     if(transactionHash !== ''){
-      console.log(transactionHash);
+      // console.log(transactionHash);
       setTimeout(() => {
         check(transactionHash);
       }, 3000);
@@ -170,7 +171,7 @@ const Main = () => {
         setHours('00');
         setMinutes('00');
         setSeconds('00');
-        console.log('Finished private sale');
+        // console.log('Finished private sale');
         setIsFinished(true);
     }
     
@@ -526,7 +527,7 @@ const Main = () => {
                 </div>
               </section> :<></>
               }
-              <button onClick={contribute} className="bg-[linear-gradient(to_right,_#8e49e9,_#FA5441)] capitalize w-full py-[0.5rem] mt-[2rem] rounded-lg text-center font-bold text-lg capitalize">
+              <button onClick={contribute} disabled={isDisabled} className="disabled:cursor-not-allowed bg-[linear-gradient(to_right,_#8e49e9,_#FA5441)] capitalize w-full py-[0.5rem] mt-[2rem] rounded-lg text-center font-bold text-lg capitalize">
                 {
                   address ? (
                     <>
