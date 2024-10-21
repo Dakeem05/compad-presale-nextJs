@@ -20,8 +20,8 @@ const Nav = () => {
   const [seconds, setSeconds] = useState('00');
   const sideRef = useRef(null);
   const { address } = useAccount();
-  const ulRef = useRef(null);
   const { open } = useWeb3Modal()
+  const ulRef = useRef(null);
   const connectHandler = () => {
     // Logic for connecting wallet
     setIsConnected(!isConnected);
